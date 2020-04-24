@@ -99,6 +99,20 @@ void Shader::SetMatrix4(const GLchar* name, const glm::mat4& matrix, GLboolean u
     glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
+void Shader::SetFloatV(const GLchar* name, const GLfloat* values, int num, GLboolean useShader)
+{
+    if (useShader)
+        this->Use();
+    glUniform1fv(glGetUniformLocation(this->ID, name), num, values);
+}
+
+void Shader::Set2FloatV(const GLchar* name, const GLfloat values[][2], int num, GLboolean useShader)
+{
+    if (useShader)
+        this->Use();
+    glUniform2fv(glGetUniformLocation(this->ID, name), num, (GLfloat*)values);
+}
+
 
 void Shader::checkCompileErrors(GLuint object, std::string type)
 {

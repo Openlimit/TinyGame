@@ -1,6 +1,6 @@
 #include "Game.h"
 
-#include <irrklang/irrKlang.h>
+//#include <irrklang/irrKlang.h>
 
 #include "ResourceManager.h"
 #include "SpriteRenderer.h"
@@ -25,7 +25,7 @@ ParticleGenerator* Particles;
 PostProcessor* Effects;
 GLfloat ShakeTime = 0.0f;
 
-irrklang::ISoundEngine* SoundEngine = irrklang::createIrrKlangDevice();
+//irrklang::ISoundEngine* SoundEngine = irrklang::createIrrKlangDevice();
 
 enum Direction {
     UP,
@@ -218,7 +218,7 @@ void Game::Init()
 
     Effects = new PostProcessor(postShader, this->Width, this->Height);
 
-    SoundEngine->play2D("../GameEngine/resources/audio/breakout.mp3", GL_TRUE);
+    //SoundEngine->play2D("../GameEngine/resources/audio/breakout.mp3", GL_TRUE);
 }
 
 void Game::Update(GLfloat dt)

@@ -3,18 +3,19 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-#include "Game.h"
-#include "ResourceManager.h"
+#include "WaterGame.h"
 
 // GLFW function declerations
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 // The Width of the screen
-const GLuint SCREEN_WIDTH = 800;
+const GLuint SCREEN_WIDTH = 1200;
 // The height of the screen
-const GLuint SCREEN_HEIGHT = 600;
+const GLuint SCREEN_HEIGHT = 800;
 
-Game Breakout(SCREEN_WIDTH, SCREEN_HEIGHT);
+GameBase* game = new WaterGame(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 int main(int argc, char* argv[])
 {
@@ -33,6 +34,8 @@ int main(int argc, char* argv[])
     }
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, key_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -49,14 +52,11 @@ int main(int argc, char* argv[])
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Initialize game
-    Breakout.Init();
+    game->Init();
 
     // DeltaTime variables
     GLfloat deltaTime = 0.0f;
     GLfloat lastFrame = 0.0f;
-
-    // Start Game within Menu State
-    Breakout.State = GAME_ACTIVE;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -68,15 +68,15 @@ int main(int argc, char* argv[])
 
         //deltaTime = 0.001f;
         // Manage user input
-        Breakout.ProcessInput(deltaTime);
+        game->ProcessInput(deltaTime);
 
         // Update Game state
-        Breakout.Update(deltaTime);
+        game->Update(deltaTime);
 
         // Render
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        Breakout.Render();
+        game->Render();
 
         glfwSwapBuffers(window);
     }
@@ -96,8 +96,20 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (key >= 0 && key < 1024)
     {
         if (action == GLFW_PRESS)
-            Breakout.Keys[key] = GL_TRUE;
+            game->Keys[key] = GL_TRUE;
         else if (action == GLFW_RELEASE)
-            Breakout.Keys[key] = GL_FALSE;
+            game->Keys[key] = GL_FALSE;
     }
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    game->ProcessMouse(xpos, ypos);
+}
+
+// glfw: whenever the mouse scroll wheel scrolls, this callback is called
+// ----------------------------------------------------------------------
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    game->ProcessScroll(xoffset, yoffset);
 }

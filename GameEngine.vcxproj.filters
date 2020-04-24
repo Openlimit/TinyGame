@@ -16,81 +16,129 @@
     <Filter Include="资源文件\shaders">
       <UniqueIdentifier>{f5828c94-d1ea-4880-9fb2-c3d52c799454}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Engine">
+      <UniqueIdentifier>{e1e03e2a-a695-4c43-8d3c-01425ab13896}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Games">
+      <UniqueIdentifier>{70aaea2e-7a03-42a6-8da3-1513c989dd5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Games\BreakOut">
+      <UniqueIdentifier>{b97da389-57a0-429c-8faf-818b5e8677a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Games\Water">
+      <UniqueIdentifier>{c4efe1fb-0e8b-4d7f-9a11-6d3f3ebdaa2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Games">
+      <UniqueIdentifier>{36a1098f-00ae-48eb-a8e7-8de78f5d711e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Games\BreakOut">
+      <UniqueIdentifier>{d111cf77-e9fb-4220-b124-f2b6ef0a9098}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Games\Water">
+      <UniqueIdentifier>{a42d632d-0da0-47f7-9b66-d7703d747160}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Engine">
+      <UniqueIdentifier>{f725e5aa-ed7d-4836-8049-3f19a6f209bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Engine\2D">
+      <UniqueIdentifier>{62291bd6-4a72-4a17-90f2-5a6caecfe339}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Engine\2D">
+      <UniqueIdentifier>{f96b8022-ed66-46ef-9336-40467a4b3401}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Game.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture2D.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="glad.c">
-      <Filter>源文件</Filter>
+    <ClCompile Include="BallObject.cpp">
+      <Filter>源文件\Games\BreakOut</Filter>
     </ClCompile>
-    <ClCompile Include="SpriteRenderer.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="Game.cpp">
+      <Filter>源文件\Games\BreakOut</Filter>
     </ClCompile>
     <ClCompile Include="GameLevel.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\Games\BreakOut</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="BallObject.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleGenerator.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="glad.c">
+      <Filter>源文件\Engine</Filter>
     </ClCompile>
     <ClCompile Include="PostProcessor.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="PowerUp.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>源文件\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>源文件\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>源文件\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterGame.cpp">
+      <Filter>源文件\Games\Water</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>源文件\Engine\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleGenerator.cpp">
+      <Filter>源文件\Engine\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteRenderer.cpp">
+      <Filter>源文件\Engine\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>源文件\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture2D.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="SpriteRenderer.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\Games\BreakOut</Filter>
     </ClInclude>
     <ClInclude Include="GameLevel.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="BallObject.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleGenerator.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="PostProcessor.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\Games\BreakOut</Filter>
     </ClInclude>
     <ClInclude Include="PowerUp.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\Games\BreakOut</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterGame.h">
+      <Filter>头文件\Games\Water</Filter>
+    </ClInclude>
+    <ClInclude Include="PostProcessor.h">
+      <Filter>头文件\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>头文件\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>头文件\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.h">
+      <Filter>头文件\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>头文件\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="BallObject.h">
+      <Filter>头文件\Games\BreakOut</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>头文件\Engine\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleGenerator.h">
+      <Filter>头文件\Engine\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteRenderer.h">
+      <Filter>头文件\Engine\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>头文件\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>头文件\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GameBase.h">
+      <Filter>头文件\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -116,6 +164,12 @@
       <Filter>资源文件\shaders</Filter>
     </None>
     <None Include="shaders\sprite_batch.frag">
+      <Filter>资源文件\shaders</Filter>
+    </None>
+    <None Include="shaders\water.vs">
+      <Filter>资源文件\shaders</Filter>
+    </None>
+    <None Include="shaders\water.frag">
       <Filter>资源文件\shaders</Filter>
     </None>
   </ItemGroup>

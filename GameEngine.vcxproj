@@ -149,24 +149,30 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
     <ClCompile Include="PostProcessor.cpp" />
-    <ClCompile Include="PowerUp.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />
     <ClCompile Include="Texture2D.cpp" />
+    <ClCompile Include="WaterGame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BallObject.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameBase.h" />
     <ClInclude Include="GameLevel.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="ParticleGenerator.h" />
     <ClInclude Include="PostProcessor.h" />
     <ClInclude Include="PowerUp.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SpriteRenderer.h" />
     <ClInclude Include="Texture2D.h" />
+    <ClInclude Include="WaterGame.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\particle.frag" />
@@ -177,6 +183,8 @@
     <None Include="shaders\sprite.vs" />
     <None Include="shaders\sprite_batch.frag" />
     <None Include="shaders\sprite_batch.vs" />
+    <None Include="shaders\water.frag" />
+    <None Include="shaders\water.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
