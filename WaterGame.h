@@ -11,10 +11,9 @@ public:
     GLuint Width, Height;
     Camera camera;
     Renderer renderer;
+    std::vector<RenderObject*> renderObjects;
 
-    Mesh* plane;
-    Shader waterShader;
-
+    Shader postShader;
     float time;
 
     WaterGame(GLuint width, GLuint height);

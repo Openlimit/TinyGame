@@ -46,6 +46,15 @@
     <Filter Include="头文件\Engine\2D">
       <UniqueIdentifier>{f96b8022-ed66-46ef-9336-40467a4b3401}</UniqueIdentifier>
     </Filter>
+    <Filter Include="资源文件\shaders\breakout">
+      <UniqueIdentifier>{a5823226-672a-403e-afe1-b0268ff2c9db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\shaders\water">
+      <UniqueIdentifier>{1aa569e4-477f-4241-8767-8862ebf4b41b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\shaders\engine">
+      <UniqueIdentifier>{a751b07f-6f17-406e-bbbf-42b07140c1bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -140,37 +149,52 @@
     <ClInclude Include="GameBase.h">
       <Filter>头文件\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="RenderObject.h">
+      <Filter>头文件\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\sprite.vs">
-      <Filter>资源文件\shaders</Filter>
-    </None>
-    <None Include="shaders\sprite.frag">
-      <Filter>资源文件\shaders</Filter>
+    <None Include="shaders\particle.frag">
+      <Filter>资源文件\shaders\breakout</Filter>
     </None>
     <None Include="shaders\particle.vs">
-      <Filter>资源文件\shaders</Filter>
-    </None>
-    <None Include="shaders\particle.frag">
-      <Filter>资源文件\shaders</Filter>
-    </None>
-    <None Include="shaders\post_processing.vs">
-      <Filter>资源文件\shaders</Filter>
+      <Filter>资源文件\shaders\breakout</Filter>
     </None>
     <None Include="shaders\post_processing.frag">
-      <Filter>资源文件\shaders</Filter>
+      <Filter>资源文件\shaders\breakout</Filter>
     </None>
-    <None Include="shaders\sprite_batch.vs">
-      <Filter>资源文件\shaders</Filter>
+    <None Include="shaders\post_processing.vs">
+      <Filter>资源文件\shaders\breakout</Filter>
+    </None>
+    <None Include="shaders\sprite.frag">
+      <Filter>资源文件\shaders\breakout</Filter>
+    </None>
+    <None Include="shaders\sprite.vs">
+      <Filter>资源文件\shaders\breakout</Filter>
     </None>
     <None Include="shaders\sprite_batch.frag">
-      <Filter>资源文件\shaders</Filter>
+      <Filter>资源文件\shaders\breakout</Filter>
     </None>
-    <None Include="shaders\water.vs">
-      <Filter>资源文件\shaders</Filter>
+    <None Include="shaders\sprite_batch.vs">
+      <Filter>资源文件\shaders\breakout</Filter>
     </None>
     <None Include="shaders\water.frag">
-      <Filter>资源文件\shaders</Filter>
+      <Filter>资源文件\shaders\water</Filter>
+    </None>
+    <None Include="shaders\water.vs">
+      <Filter>资源文件\shaders\water</Filter>
+    </None>
+    <None Include="shaders\water_postprocess.vs">
+      <Filter>资源文件\shaders\water</Filter>
+    </None>
+    <None Include="shaders\water_postprocess.frag">
+      <Filter>资源文件\shaders\water</Filter>
+    </None>
+    <None Include="shaders\mesh.vs">
+      <Filter>资源文件\shaders\engine</Filter>
+    </None>
+    <None Include="shaders\mesh.frag">
+      <Filter>资源文件\shaders\engine</Filter>
     </None>
   </ItemGroup>
 </Project>

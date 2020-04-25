@@ -168,6 +168,7 @@
     <ClInclude Include="PostProcessor.h" />
     <ClInclude Include="PowerUp.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RenderObject.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SpriteRenderer.h" />
@@ -175,6 +176,8 @@
     <ClInclude Include="WaterGame.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\mesh.frag" />
+    <None Include="shaders\mesh.vs" />
     <None Include="shaders\particle.frag" />
     <None Include="shaders\particle.vs" />
     <None Include="shaders\post_processing.frag" />
@@ -185,6 +188,8 @@
     <None Include="shaders\sprite_batch.vs" />
     <None Include="shaders\water.frag" />
     <None Include="shaders\water.vs" />
+    <None Include="shaders\water_postprocess.frag" />
+    <None Include="shaders\water_postprocess.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

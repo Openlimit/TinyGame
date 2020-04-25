@@ -12,58 +12,61 @@ class Mesh {
 public:
     /*  Mesh Data  */
     std::vector<glm::vec3> vertices;
-    std::vector<unsigned int> indices;
-    unsigned int VAO;
+    std::vector<GLuint> indices;
 
     /*  Functions  */
     // constructor
-    Mesh(std::vector<glm::vec3>& vertices, std::vector<unsigned int>& indices)
+    Mesh() {}
+
+    Mesh(std::vector<glm::vec3>& vertices, std::vector<GLuint>& indices)
     {
         this->vertices = vertices;
         this->indices = indices;
-
-        setupMesh();
     }
+};
 
-    Mesh(std::vector<glm::vec3>& vertices)
+class Quad : public Mesh
+{
+public:
+    enum QUADCLASS
     {
-        this->vertices = vertices;
+        XY, ZY, XZ,
+    };
 
-        setupMesh();
-    }
-
-    ~Mesh() {
-        glDeleteBuffers(1, &VBO);
-        glDeleteVertexArrays(1, &VAO);
-    }
-
-private:
-    /*  Render data  */
-    unsigned int VBO, EBO;
-
-    /*  Functions    */
-    // initializes all the buffer objects/arrays
-    void setupMesh()
+    Quad(float left, float right, float down, float top, float height, QUADCLASS quadClass)
     {
-        // create buffers/arrays
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-        //glGenBuffers(1, &EBO);
+        this->indices.resize(6);
+        this->indices[0] = 3;
+        this->indices[1] = 2;
+        this->indices[2] = 0;
+        this->indices[3] = 2;
+        this->indices[4] = 1;
+        this->indices[5] = 0;
 
-        glBindVertexArray(VAO);
-        // load data into vertex buffers
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
-
-        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        //glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-
-        // set the vertex attribute pointers
-        // vertex Positions
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-
-        glBindVertexArray(0);
+        this->vertices.resize(4);
+        switch (quadClass)
+        {
+        case XY:
+            this->vertices[0] = glm::vec3(left, down, height);
+            this->vertices[1] = glm::vec3(right, down, height);
+            this->vertices[2] = glm::vec3(right, top, height);
+            this->vertices[3] = glm::vec3(left, top, height);
+            break;
+        case ZY:
+            this->vertices[0] = glm::vec3(height, left, down);
+            this->vertices[1] = glm::vec3(height, right, down);
+            this->vertices[2] = glm::vec3(height, right, top);
+            this->vertices[3] = glm::vec3(height, left, top);
+            break;
+        case XZ:
+            this->vertices[0] = glm::vec3(left, height, down);
+            this->vertices[1] = glm::vec3(right, height, down);
+            this->vertices[2] = glm::vec3(right, height, top);
+            this->vertices[3] = glm::vec3(left, height, top);
+            break;
+        default:
+            break;
+        }
     }
 };
 

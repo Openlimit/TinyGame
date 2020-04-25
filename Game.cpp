@@ -25,6 +25,10 @@ ParticleGenerator* Particles;
 PostProcessor* Effects;
 GLfloat ShakeTime = 0.0f;
 
+bool Chaos;
+bool Confuse;
+bool Shake;
+
 //irrklang::ISoundEngine* SoundEngine = irrklang::createIrrKlangDevice();
 
 enum Direction {
@@ -122,13 +126,13 @@ void ActivatePowerUp(PowerUp& powerUp)
     }
     else if (powerUp.Type == "confuse")
     {
-        if (!Effects->Chaos)
-            Effects->Confuse = GL_TRUE; // Only activate if chaos wasn't already active
+        if (!Chaos)
+            Confuse = GL_TRUE; // Only activate if chaos wasn't already active
     }
     else if (powerUp.Type == "chaos")
     {
-        if (!Effects->Confuse)
-            Effects->Chaos = GL_TRUE;
+        if (!Confuse)
+            Chaos = GL_TRUE;
     }
 }
 
@@ -216,7 +220,38 @@ void Game::Init()
         500
     );
 
+    postShader.Use();
+    postShader.SetInteger("scene", 0);
+    GLfloat offset = 1.0f / 300.0f;
+    GLfloat offsets[9][2] = {
+        { -offset,  offset  },  // top-left
+        {  0.0f,    offset  },  // top-center
+        {  offset,  offset  },  // top-right
+        { -offset,  0.0f    },  // center-left
+        {  0.0f,    0.0f    },  // center-center
+        {  offset,  0.0f    },  // center - right
+        { -offset, -offset  },  // bottom-left
+        {  0.0f,   -offset  },  // bottom-center
+        {  offset, -offset  }   // bottom-right    
+    };
+    postShader.Set2FloatV("offsets", offsets, 9);
+    GLint edge_kernel[9] = {
+        -1, -1, -1,
+        -1,  8, -1,
+        -1, -1, -1
+    };
+    postShader.SetIntegerV("edge_kernel", edge_kernel, 9);
+    GLfloat blur_kernel[9] = {
+        1.0 / 16, 2.0 / 16, 1.0 / 16,
+        2.0 / 16, 4.0 / 16, 2.0 / 16,
+        1.0 / 16, 2.0 / 16, 1.0 / 16
+    };
+    postShader.SetFloatV("blur_kernel", blur_kernel, 9);
     Effects = new PostProcessor(postShader, this->Width, this->Height);
+
+    Chaos = false;
+    Confuse = false;
+    Shake = false;
 
     //SoundEngine->play2D("../GameEngine/resources/audio/breakout.mp3", GL_TRUE);
 }
@@ -238,7 +273,7 @@ void Game::Update(GLfloat dt)
     {
         ShakeTime -= dt;
         if (ShakeTime <= 0.0f)
-            Effects->Shake = GL_FALSE;
+            Shake = GL_FALSE;
     }
     // Check loss condition
     if (Ball->Position.y >= this->Height) // Did ball reach bottom edge?
@@ -310,8 +345,13 @@ void Game::Render()
         // Draw ball
         Ball->Draw(*Renderer);
 
-        Effects->EndRender();
-        Effects->Render(glfwGetTime());
+        Effects->PostProcessingShader.Use();
+        Effects->PostProcessingShader.SetFloat("time", glfwGetTime());
+        Effects->PostProcessingShader.SetInteger("confuse", Confuse);
+        Effects->PostProcessingShader.SetInteger("chaos", Chaos);
+        Effects->PostProcessingShader.SetInteger("shake", Shake);
+
+        Effects->Render();
     }
 }
 
@@ -333,7 +373,7 @@ void Game::DoCollisions()
                 else
                 {   // if block is solid, enable shake effect
                     ShakeTime = 0.05f;
-                    Effects->Shake = GL_TRUE;
+                    Shake = GL_TRUE;
                 }
                 // Collision resolution
                 Direction dir = std::get<1>(collision);
@@ -423,7 +463,7 @@ void Game::ResetPlayer()
     Player->Position = glm::vec2(this->Width / 2 - PLAYER_SIZE.x / 2, this->Height - PLAYER_SIZE.y);
     Ball->Reset(Player->Position + glm::vec2(PLAYER_SIZE.x / 2 - BALL_RADIUS, -(BALL_RADIUS * 2)), INITIAL_BALL_VELOCITY);
     // Also disable all active powerups
-    Effects->Chaos = Effects->Confuse = GL_FALSE;
+    Chaos = Confuse = GL_FALSE;
     Ball->PassThrough = Ball->Sticky = GL_FALSE;
     Player->Color = glm::vec3(1.0f);
     Ball->Color = glm::vec3(1.0f);
@@ -479,14 +519,14 @@ void Game::UpdatePowerUps(GLfloat dt)
                 {
                     if (!IsOtherPowerUpActive(this->PowerUps, "confuse"))
                     {	// Only reset if no other PowerUp of type confuse is active
-                        Effects->Confuse = GL_FALSE;
+                        Confuse = GL_FALSE;
                     }
                 }
                 else if (powerUp.Type == "chaos")
                 {
                     if (!IsOtherPowerUpActive(this->PowerUps, "chaos"))
                     {	// Only reset if no other PowerUp of type chaos is active
-                        Effects->Chaos = GL_FALSE;
+                        Chaos = GL_FALSE;
                     }
                 }
             }

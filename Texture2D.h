@@ -20,8 +20,10 @@ public:
     GLuint Filter_Max; // Filtering mode if texture pixels > screen pixels
     // Constructor (sets default texture modes)
     Texture2D();
+    ~Texture2D();
     // Generates texture from image data
     void Generate(GLuint width, GLuint height, unsigned char* data);
+    void GenerateFloat(GLuint width, GLuint height, float* data);
     // Binds the texture as the current active GL_TEXTURE_2D texture object
     void Bind() const;
 };

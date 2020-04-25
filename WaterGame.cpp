@@ -1,11 +1,12 @@
 #include "WaterGame.h"
 #include <random>
 
-static std::vector<glm::vec3> createGrid(glm::vec2 topLeft, glm::vec2 downRight, float H, int width, int height)
+void createGrid(glm::vec2 topLeft, glm::vec2 downRight, float H, int width, int height,
+    std::vector<glm::vec3> &vertices, std::vector<GLuint> &indices)
 {
     int point_width = width + 1;
     int point_height = height + 1;
-    glm::vec3* points = new glm::vec3[point_width * point_height];
+    vertices.resize(point_width * point_height);
     for (int y = 0; y <= height; ++y)
     {
         for (int x = 0; x <= width; ++x)
@@ -13,11 +14,10 @@ static std::vector<glm::vec3> createGrid(glm::vec2 topLeft, glm::vec2 downRight,
             float u = (float)x / (float)width;
             float v = (float)y / (float)height;
             glm::vec2 point = glm::vec2(1 - u, 1 - v) * topLeft + glm::vec2(u, v) * downRight;
-            points[y * point_width + x] = glm::vec3(point.x, H, point.y);
+            vertices[y * point_width + x] = glm::vec3(point.x, H, point.y);
         }
     }
 
-    std::vector<glm::vec3> grid_points;
     bool oddRow = false;
     for (int y = 0; y < height; ++y)
     {
@@ -30,13 +30,13 @@ static std::vector<glm::vec3> createGrid(glm::vec2 topLeft, glm::vec2 downRight,
                 int n2 = y * point_width + x;
                 int n3 = (y + 1) * point_width + x;
 
-                grid_points.emplace_back(points[n0]);
-                grid_points.emplace_back(points[n1]);
-                grid_points.emplace_back(points[n2]);
+                indices.emplace_back(n0);
+                indices.emplace_back(n1);
+                indices.emplace_back(n2);
 
-                grid_points.emplace_back(points[n2]);
-                grid_points.emplace_back(points[n1]);
-                grid_points.emplace_back(points[n3]);
+                indices.emplace_back(n2);
+                indices.emplace_back(n1);
+                indices.emplace_back(n3);
             }
         }
         else
@@ -48,21 +48,17 @@ static std::vector<glm::vec3> createGrid(glm::vec2 topLeft, glm::vec2 downRight,
                 int n2 = (y + 1) * point_width + x;
                 int n3 = y * point_width + x;
 
-                grid_points.emplace_back(points[n0]);
-                grid_points.emplace_back(points[n1]);
-                grid_points.emplace_back(points[n2]);
+                indices.emplace_back(n0);
+                indices.emplace_back(n1);
+                indices.emplace_back(n2);
 
-                grid_points.emplace_back(points[n2]);
-                grid_points.emplace_back(points[n1]);
-                grid_points.emplace_back(points[n3]);
+                indices.emplace_back(n2);
+                indices.emplace_back(n1);
+                indices.emplace_back(n3);
             }
         }
         oddRow = !oddRow;
     }
-
-    delete[] points;
-
-    return grid_points;
 }
 
 WaterGame::WaterGame(GLuint width, GLuint height) : Width(width), Height(height)
@@ -72,18 +68,23 @@ WaterGame::WaterGame(GLuint width, GLuint height) : Width(width), Height(height)
 
 WaterGame::~WaterGame()
 {
-
+    for (int i = 0; i < renderObjects.size(); i++)
+    {
+        delete renderObjects[i];
+    }
 }
 
 void WaterGame::Init()
 {
-	this->camera = Camera(glm::vec3(0, 20, 20), glm::vec3(0, 1, 0));
+    this->time = 0;
+	this->camera = Camera(glm::vec3(0, 5, 30), glm::vec3(0, 1, 0));
 
-    std::vector<glm::vec3> grid = createGrid(glm::vec2(-10, -10), glm::vec2(10, 10), 0, 50, 50);
-    this->plane = new Mesh(grid);
-
-    this->waterShader = ResourceManager::LoadShader("shaders/water.vs", "shaders/water.frag", nullptr, "water");
-    this->waterShader.Use().SetMatrix4("model", glm::mat4());
+    std::vector<glm::vec3> vertices;
+    std::vector<GLuint> indices;
+    createGrid(glm::vec2(-10, -10), glm::vec2(10, 10), 0, 50, 50, vertices, indices);
+    Mesh *water_plane = new Mesh(vertices, indices);
+    Shader waterShader = ResourceManager::LoadShader("shaders/water.vs", "shaders/water.frag", nullptr, "water");
+    waterShader.Use().SetMatrix4("model", glm::mat4());
 
     const int NUM = 4;
     GLfloat A[NUM];
@@ -108,16 +109,36 @@ void WaterGame::Init()
         D[i][0] = dir.x;
         D[i][1] = dir.y;
     }
-    this->waterShader.SetFloatV("A", A, NUM);
-    this->waterShader.SetFloatV("W", W, NUM);
-    this->waterShader.SetFloatV("P", P, NUM);
-    this->waterShader.Set2FloatV("D", D, NUM);
+    waterShader.SetFloatV("A", A, NUM);
+    waterShader.SetFloatV("W", W, NUM);
+    waterShader.SetFloatV("P", P, NUM);
+    waterShader.Set2FloatV("D", D, NUM);
 
-    this->waterShader.SetVector3f("light_pos", glm::vec3(-10, 10, -10));
-    this->waterShader.SetVector3f("specular_color", glm::vec3(0.5));
-    this->waterShader.SetVector3f("diffuse_color", glm::vec3(0, 180./255, 1));
+    waterShader.SetVector3f("light_pos", glm::vec3(-10, 10, -10));
+    waterShader.SetVector3f("specular_color", glm::vec3(0.5));
+    waterShader.SetVector3f("diffuse_color", glm::vec3(0, 180./255, 1));
 
-    this->time = 0;
+    Mesh* ground = new Quad(-100, 100, -100, 100, -5, Quad::XZ);
+    Shader groundShader = ResourceManager::LoadShader("shaders/mesh.vs", "shaders/mesh.frag", nullptr, "mesh");
+    groundShader.Use();
+    groundShader.SetMatrix4("model", glm::mat4());
+    groundShader.SetVector3f("color", glm::vec3(0.5, 0.5, 0.5));
+
+    this->renderObjects.emplace_back(new RenderObject(water_plane, waterShader));
+    this->renderObjects.emplace_back(new RenderObject(ground, groundShader));
+
+    this->postShader = ResourceManager::LoadShader("shaders/water_postprocess.vs", "shaders/water_postprocess.frag", nullptr, "water_postprocess");
+    this->postShader.Use();
+    this->postShader.SetInteger("scene_color", 0);
+    this->postShader.SetInteger("scene_depth", 1);
+    this->postShader.SetFloat("near_plane", 0.1);
+    this->postShader.SetFloat("far_plane", 100);
+    this->postShader.SetFloat("fog_start", 20);
+    this->postShader.SetFloat("fog_end", 50);
+    this->postShader.SetFloat("fog_density", 0.02);
+    this->postShader.SetVector3f("fog_color", glm::vec3(0, 0.5, 1));
+
+    this->renderer.addPostProcessor(this->postShader, Width, Height);
 }
 
 void WaterGame::ProcessInput(GLfloat dt)
@@ -162,17 +183,21 @@ void WaterGame::Update(GLfloat dt)
 {
     glm::mat4 view = this->camera.GetViewMatrix();
     glm::mat4 projection = glm::perspective(glm::radians(this->camera.Zoom), (float)Width / (float)Height, 0.1f, 100.0f);
-    this->waterShader.Use();
-    this->waterShader.SetMatrix4("view", view);
-    this->waterShader.SetMatrix4("projection", projection);
+    
+    this->renderObjects[0]->shader.Use();
+    this->renderObjects[0]->shader.SetMatrix4("view", view);
+    this->renderObjects[0]->shader.SetMatrix4("projection", projection);
     
     this->time += dt;
-    this->waterShader.SetFloat("time", this->time);
+    this->renderObjects[0]->shader.SetFloat("time", this->time);
+    this->renderObjects[0]->shader.SetVector3f("view_pos", this->camera.Position);
 
-    this->waterShader.SetVector3f("view_pos", this->camera.Position);
+    this->renderObjects[1]->shader.Use();
+    this->renderObjects[1]->shader.SetMatrix4("view", view);
+    this->renderObjects[1]->shader.SetMatrix4("projection", projection);
 }
 
 void WaterGame::Render()
 {
-    this->renderer.Draw(*(this->plane), this->waterShader);
+    this->renderer.Draw(renderObjects);
 }

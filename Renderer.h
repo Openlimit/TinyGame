@@ -1,11 +1,8 @@
 #pragma once
 #include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
-#include "Texture2D.h"
-#include "Shader.h"
-#include "Mesh.h"
+#include "RenderObject.h"
+#include "PostProcessor.h"
 
 class Renderer
 {
@@ -15,8 +12,13 @@ public:
     
     ~Renderer();
     
-    void Draw(Mesh& mesh, Shader& shader, Texture2D& texture);
+    void Draw(RenderObject* renderObject);
 
-    void Draw(Mesh& mesh, Shader& shader);
+    void Draw(std::vector<RenderObject*>& renderObjects);
+
+    void addPostProcessor(Shader shader, int width, int height);
+
+private:
+    PostProcessor* postProcessor;
 };
 

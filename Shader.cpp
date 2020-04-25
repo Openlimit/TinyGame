@@ -99,6 +99,13 @@ void Shader::SetMatrix4(const GLchar* name, const glm::mat4& matrix, GLboolean u
     glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
+void Shader::SetIntegerV(const GLchar* name, const GLint* values, int num, GLboolean useShader)
+{
+    if (useShader)
+        this->Use();
+    glUniform1iv(glGetUniformLocation(this->ID, name), num, values);
+}
+
 void Shader::SetFloatV(const GLchar* name, const GLfloat* values, int num, GLboolean useShader)
 {
     if (useShader)
