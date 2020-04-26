@@ -10,16 +10,22 @@ class RenderObject
 {
 public:
 	Mesh* mesh;
-	Shader shader;
+	Shader forwardShader;
+    Shader defferedGeoShader, defferedShadingShader;
 	std::vector<Texture2D*> textures;
     GLuint VAO;
 
-	RenderObject(Mesh* mesh, Shader shader, std::vector<Texture2D*>& textures) :mesh(mesh), shader(shader), textures(textures)
+	RenderObject(Mesh* mesh, Shader shader, std::vector<Texture2D*>& textures) :mesh(mesh), forwardShader(shader), textures(textures)
 	{
         setup();
 	}
 
-    RenderObject(Mesh* mesh, Shader shader) :mesh(mesh), shader(shader)
+    RenderObject(Mesh* mesh, Shader shader) :mesh(mesh), forwardShader(shader)
+    {
+        setup();
+    }
+
+    RenderObject(Mesh* mesh) :mesh(mesh)
     {
         setup();
     }

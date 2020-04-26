@@ -2,7 +2,7 @@
 #include <vector>
 #include "GameBase.h"
 #include "Camera.h"
-#include "Renderer.h"
+#include "DeferredRenderer.h"
 #include "ResourceManager.h"
 
 class WaterGame :public GameBase
@@ -10,7 +10,7 @@ class WaterGame :public GameBase
 public:
     GLuint Width, Height;
     Camera camera;
-    Renderer renderer;
+    Renderer* renderer;
     std::vector<RenderObject*> renderObjects;
 
     Shader postShader;

@@ -60,6 +60,8 @@ void main()
     normal.y = 1;
     normal.z = -dz;
     normal = normalize(normal);
+    mat3 normalMatrix = transpose(inverse(mat3(model)));
+    normal = normalMatrix * normal;
 
     frag_pos = world_vert.xyz;
 }

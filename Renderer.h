@@ -7,18 +7,18 @@
 class Renderer
 {
 public:
-    
-    Renderer();
-    
-    ~Renderer();
-    
-    void Draw(RenderObject* renderObject);
 
-    void Draw(std::vector<RenderObject*>& renderObjects);
+    Renderer();
+
+    virtual ~Renderer();
+
+    virtual void Draw(RenderObject* renderObject) = 0;
+
+    virtual void Draw(std::vector<RenderObject*>& renderObjects) = 0;
 
     void addPostProcessor(Shader shader, int width, int height);
 
-private:
+protected:
     PostProcessor* postProcessor;
 };
 

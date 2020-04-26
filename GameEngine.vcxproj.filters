@@ -55,6 +55,15 @@
     <Filter Include="资源文件\shaders\engine">
       <UniqueIdentifier>{a751b07f-6f17-406e-bbbf-42b07140c1bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Engine\Render">
+      <UniqueIdentifier>{a542651d-3820-450e-a91e-7c58922fc03f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Engine\Render">
+      <UniqueIdentifier>{52310050-9057-481e-949f-dd4da6aa0f16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件\shaders\engine\deffered">
+      <UniqueIdentifier>{1b9c6ba7-50c7-4d69-b328-00c7d3748564}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -70,9 +79,6 @@
       <Filter>源文件\Games\BreakOut</Filter>
     </ClCompile>
     <ClCompile Include="glad.c">
-      <Filter>源文件\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="PostProcessor.cpp">
       <Filter>源文件\Engine</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
@@ -96,8 +102,17 @@
     <ClCompile Include="SpriteRenderer.cpp">
       <Filter>源文件\Engine\2D</Filter>
     </ClCompile>
+    <ClCompile Include="DeferredRenderer.cpp">
+      <Filter>源文件\Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="ForwardRenderer.cpp">
+      <Filter>源文件\Engine\Render</Filter>
+    </ClCompile>
     <ClCompile Include="Renderer.cpp">
-      <Filter>源文件\Engine</Filter>
+      <Filter>源文件\Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcessor.cpp">
+      <Filter>源文件\Engine\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -112,9 +127,6 @@
     </ClInclude>
     <ClInclude Include="WaterGame.h">
       <Filter>头文件\Games\Water</Filter>
-    </ClInclude>
-    <ClInclude Include="PostProcessor.h">
-      <Filter>头文件\Engine</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
       <Filter>头文件\Engine</Filter>
@@ -143,14 +155,23 @@
     <ClInclude Include="Mesh.h">
       <Filter>头文件\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>头文件\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="GameBase.h">
       <Filter>头文件\Engine</Filter>
     </ClInclude>
     <ClInclude Include="RenderObject.h">
       <Filter>头文件\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>头文件\Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="DeferredRenderer.h">
+      <Filter>头文件\Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="ForwardRenderer.h">
+      <Filter>头文件\Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="PostProcessor.h">
+      <Filter>头文件\Engine\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -184,9 +205,6 @@
     <None Include="shaders\water.vs">
       <Filter>资源文件\shaders\water</Filter>
     </None>
-    <None Include="shaders\water_postprocess.vs">
-      <Filter>资源文件\shaders\water</Filter>
-    </None>
     <None Include="shaders\water_postprocess.frag">
       <Filter>资源文件\shaders\water</Filter>
     </None>
@@ -194,6 +212,18 @@
       <Filter>资源文件\shaders\engine</Filter>
     </None>
     <None Include="shaders\mesh.frag">
+      <Filter>资源文件\shaders\engine</Filter>
+    </None>
+    <None Include="shaders\mesh_geo.vs">
+      <Filter>资源文件\shaders\engine\deffered</Filter>
+    </None>
+    <None Include="shaders\mesh_geo.frag">
+      <Filter>资源文件\shaders\engine\deffered</Filter>
+    </None>
+    <None Include="shaders\mesh_shading.frag">
+      <Filter>资源文件\shaders\engine\deffered</Filter>
+    </None>
+    <None Include="shaders\screen_quad.vs">
       <Filter>资源文件\shaders\engine</Filter>
     </None>
   </ItemGroup>

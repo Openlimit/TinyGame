@@ -142,6 +142,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BallObject.cpp" />
+    <ClCompile Include="DeferredRenderer.cpp" />
+    <ClCompile Include="ForwardRenderer.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLevel.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -159,6 +161,8 @@
   <ItemGroup>
     <ClInclude Include="BallObject.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="DeferredRenderer.h" />
+    <ClInclude Include="ForwardRenderer.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameBase.h" />
     <ClInclude Include="GameLevel.h" />
@@ -176,6 +180,9 @@
     <ClInclude Include="WaterGame.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\mesh_geo.frag" />
+    <None Include="shaders\mesh_geo.vs" />
+    <None Include="shaders\mesh_shading.frag" />
     <None Include="shaders\mesh.frag" />
     <None Include="shaders\mesh.vs" />
     <None Include="shaders\particle.frag" />
@@ -189,7 +196,7 @@
     <None Include="shaders\water.frag" />
     <None Include="shaders\water.vs" />
     <None Include="shaders\water_postprocess.frag" />
-    <None Include="shaders\water_postprocess.vs" />
+    <None Include="shaders\screen_quad.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

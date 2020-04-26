@@ -13,6 +13,7 @@ void main()
 {
     vec3 ambient = 0.2*diffuse_color;
 
+    normal = normalize(normal);
     vec3 light_dir = normalize(light_pos-frag_pos);
     float diffuse = max(dot(light_dir,normal),0);
 

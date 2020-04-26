@@ -3,19 +3,15 @@
 #include <iostream>
 
 PostProcessor::PostProcessor(Shader shader, GLuint width, GLuint height)
-    : PostProcessingShader(shader), colorTexture(), depthTexture(), Width(width), Height(height), samples(4)
+    : PostProcessingShader(shader), Width(width), Height(height)
 {
     // Initializeframebuffer object
     glGenFramebuffers(1, &this->FBO);
     glBindFramebuffer(GL_FRAMEBUFFER, this->FBO);
 
-    this->colorTexture.Generate(width, height, NULL);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->colorTexture.ID, 0);
-    
-    this->depthTexture.Image_Format = this->depthTexture.Internal_Format = GL_DEPTH_COMPONENT;
-    this->depthTexture.Filter_Min = this->depthTexture.Filter_Max = GL_NEAREST;
-    this->depthTexture.GenerateFloat(width, height, NULL);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->depthTexture.ID, 0);
+    this->colorTexture = new Texture2D();
+    this->colorTexture->Generate(width, height, NULL);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->colorTexture->ID, 0);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "ERROR::POSTPROCESSOR: Failed to initialize FBO" << std::endl;
@@ -23,6 +19,15 @@ PostProcessor::PostProcessor(Shader shader, GLuint width, GLuint height)
 
     // Initialize render data and uniforms
     this->initRenderData();
+}
+
+PostProcessor::~PostProcessor()
+{
+    glDeleteBuffers(1, &this->VBO);
+    glDeleteVertexArrays(1, &this->VAO);
+    glDeleteFramebuffers(1, &this->FBO);
+    if (this->colorTexture != nullptr)
+        delete this->colorTexture;
 }
 
 void PostProcessor::BeginRender()
@@ -33,29 +38,44 @@ void PostProcessor::BeginRender()
 void PostProcessor::Render()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glDisable(GL_DEPTH_TEST);
+
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     this->PostProcessingShader.Use();
     
     // Render textured quad
     glActiveTexture(GL_TEXTURE0);
-    this->colorTexture.Bind();
-    glActiveTexture(GL_TEXTURE1);
-    this->depthTexture.Bind();
+    this->colorTexture->Bind();
 
     glBindVertexArray(this->VAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+}
 
-    glEnable(GL_DEPTH_TEST);
+void PostProcessor::Render(Texture2D* gPosition)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    this->PostProcessingShader.Use();
+
+    // Render textured quad
+    glActiveTexture(GL_TEXTURE0);
+    this->colorTexture->Bind();
+    glActiveTexture(GL_TEXTURE1);
+    gPosition->Bind();
+
+    glBindVertexArray(this->VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
 }
 
 void PostProcessor::initRenderData()
 {
     // Configure VAO/VBO
-    GLuint VBO;
     GLfloat vertices[] = {
         // Pos        // Tex
         -1.0f, -1.0f, 0.0f, 0.0f,
@@ -67,9 +87,9 @@ void PostProcessor::initRenderData()
          1.0f,  1.0f, 1.0f, 1.0f
     };
     glGenVertexArrays(1, &this->VAO);
-    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &this->VBO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glBindVertexArray(this->VAO);
