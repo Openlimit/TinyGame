@@ -167,19 +167,19 @@ Game::~Game()
 void Game::Init()
 {
     // Load shaders
-    Shader spriteShader = ResourceManager::LoadShader("shaders/sprite.vs", "shaders/sprite.frag", nullptr, "sprite");
-    Shader particleShader = ResourceManager::LoadShader("shaders/particle.vs", "shaders/particle.frag", nullptr, "particle");
-    Shader postShader = ResourceManager::LoadShader("shaders/post_processing.vs", "shaders/post_processing.frag", nullptr, "postprocessing");
-    Shader spriteBatchShader = ResourceManager::LoadShader("shaders/sprite_batch.vs", "shaders/sprite_batch.frag", nullptr, "sprite_batch");
+    Shader* spriteShader = ResourceManager::LoadShader("shaders/sprite.vs", "shaders/sprite.frag", nullptr, "sprite");
+    Shader* particleShader = ResourceManager::LoadShader("shaders/particle.vs", "shaders/particle.frag", nullptr, "particle");
+    Shader* postShader = ResourceManager::LoadShader("shaders/post_processing.vs", "shaders/post_processing.frag", nullptr, "postprocessing");
+    Shader* spriteBatchShader = ResourceManager::LoadShader("shaders/sprite_batch.vs", "shaders/sprite_batch.frag", nullptr, "sprite_batch");
 
     // Configure shaders
     glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(this->Width), static_cast<GLfloat>(this->Height), 0.0f, -1.0f, 1.0f);
-    spriteShader.Use().SetInteger("sprite", 0);
-    spriteShader.SetMatrix4("projection", projection);
-    particleShader.Use().SetInteger("sprite", 0);
-    particleShader.SetMatrix4("projection", projection);
-    spriteBatchShader.Use().SetInteger("sprite", 0);
-    spriteBatchShader.SetMatrix4("projection", projection);
+    spriteShader->Use()->SetInteger("sprite", 0);
+    spriteShader->SetMatrix4("projection", projection);
+    particleShader->Use()->SetInteger("sprite", 0);
+    particleShader->SetMatrix4("projection", projection);
+    spriteBatchShader->Use()->SetInteger("sprite", 0);
+    spriteBatchShader->SetMatrix4("projection", projection);
 
     // Load textures
     ResourceManager::LoadTexture("resources/textures/background.jpg", GL_FALSE, "background");
@@ -220,8 +220,8 @@ void Game::Init()
         500
     );
 
-    postShader.Use();
-    postShader.SetInteger("scene", 0);
+    postShader->Use();
+    postShader->SetInteger("scene", 0);
     GLfloat offset = 1.0f / 300.0f;
     GLfloat offsets[9][2] = {
         { -offset,  offset  },  // top-left
@@ -234,19 +234,19 @@ void Game::Init()
         {  0.0f,   -offset  },  // bottom-center
         {  offset, -offset  }   // bottom-right    
     };
-    postShader.Set2FloatV("offsets", offsets, 9);
+    postShader->Set2FloatV("offsets", offsets, 9);
     GLint edge_kernel[9] = {
         -1, -1, -1,
         -1,  8, -1,
         -1, -1, -1
     };
-    postShader.SetIntegerV("edge_kernel", edge_kernel, 9);
+    postShader->SetIntegerV("edge_kernel", edge_kernel, 9);
     GLfloat blur_kernel[9] = {
         1.0 / 16, 2.0 / 16, 1.0 / 16,
         2.0 / 16, 4.0 / 16, 2.0 / 16,
         1.0 / 16, 2.0 / 16, 1.0 / 16
     };
-    postShader.SetFloatV("blur_kernel", blur_kernel, 9);
+    postShader->SetFloatV("blur_kernel", blur_kernel, 9);
     Effects = new PostProcessor(postShader, this->Width, this->Height);
 
     Chaos = false;
@@ -325,7 +325,7 @@ void Game::ProcessInput(GLfloat dt)
 
 void Game::Render()
 {
-    Texture2D background = ResourceManager::GetTexture("background");
+    Texture2D* background = ResourceManager::GetTexture("background");
 
     if (this->State == GAME_ACTIVE || this->State == GAME_PAUSE)
     {
@@ -345,11 +345,11 @@ void Game::Render()
         // Draw ball
         Ball->Draw(*Renderer);
 
-        Effects->PostProcessingShader.Use();
-        Effects->PostProcessingShader.SetFloat("time", glfwGetTime());
-        Effects->PostProcessingShader.SetInteger("confuse", Confuse);
-        Effects->PostProcessingShader.SetInteger("chaos", Chaos);
-        Effects->PostProcessingShader.SetInteger("shake", Shake);
+        Effects->PostProcessingShader->Use();
+        Effects->PostProcessingShader->SetFloat("time", glfwGetTime());
+        Effects->PostProcessingShader->SetInteger("confuse", Confuse);
+        Effects->PostProcessingShader->SetInteger("chaos", Chaos);
+        Effects->PostProcessingShader->SetInteger("shake", Shake);
 
         Effects->Render();
     }

@@ -9,8 +9,6 @@ public:
 
     ~ForwardRenderer();
 
-    void Draw(RenderObject* renderObject) override;
-
-    void Draw(std::vector<RenderObject*>& renderObjects) override;
+    void Draw(Scene* scene) override;
 };
 

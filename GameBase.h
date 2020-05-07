@@ -1,16 +1,81 @@
 #pragma once
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include "Scene.h"
+#include "Camera.h"
+#include "ForwardRenderer.h"
+#include "DeferredRenderer.h"
+#include "ResourceManager.h"
 
 class GameBase {
 public:
     GLboolean Keys[1024];
+    GLuint Width, Height;
+    Camera* camera;
+    Renderer* renderer;
+    Scene *scene;
+
+    float near_plane;
+    float far_plane;
+
+    GameBase(GLuint width, GLuint height, Renderer::RENDER_TYPE type = Renderer::FORWARD) :Width(width), Height(height), near_plane(0.1), far_plane(100)
+    {
+        if (type == Renderer::FORWARD)
+        {
+            this->renderer = new ForwardRenderer();
+        }
+        else if (type == Renderer::DEFFERED)
+        {
+            this->renderer = new DeferredRenderer(Width, Height);
+        }
+
+        this->scene = new Scene();
+    }
+
+    ~GameBase()
+    {
+        if (this->renderer != nullptr)
+            delete this->renderer;
+        if (this->scene != nullptr)
+            delete this->scene;
+    }
+
+    void Render()
+    {
+        this->renderer->Draw(this->scene);
+    }
+
+    void GameProcessInput(GLfloat dt)
+    {
+        this->camera->ProcessInput(this->Keys, dt);
+        this->ProcessInput(dt);
+    }
+
+    void GameProcessMouse(double xpos, double ypos)
+    {
+        this->camera->ProcessMouse(xpos, ypos);
+        this->ProcessMouse(xpos, ypos);
+    }
+
+    void GameProcessScroll(double xoffset, double yoffset)
+    {
+        this->camera->ProcessScroll(xoffset, yoffset);
+        this->ProcessScroll(xoffset, yoffset);
+    }
+
+    void GameUpdate(GLfloat dt)
+    {
+        glm::mat4 view = this->camera->GetViewMatrix();
+        glm::mat4 projection = glm::perspective(glm::radians(this->camera->Zoom), (float)Width / (float)Height, near_plane, far_plane);
+        this->scene->update_VP(view, projection);
+
+        this->Update(dt);
+    }
 
     virtual void Init() = 0;
-    // GameLoop
+
+protected:
+    virtual void Update(GLfloat dt) = 0;
+
     virtual void ProcessInput(GLfloat dt) = 0;
     virtual void ProcessMouse(double xpos, double ypos) = 0;
     virtual void ProcessScroll(double xoffset, double yoffset) = 0;
-    virtual void Update(GLfloat dt) = 0;
-    virtual void Render() = 0;
 };

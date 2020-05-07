@@ -1,6 +1,6 @@
 #include "ParticleGenerator.h"
 
-ParticleGenerator::ParticleGenerator(Shader shader, Texture2D texture, GLuint amount)
+ParticleGenerator::ParticleGenerator(Shader* shader, Texture2D* texture, GLuint amount)
     : shader(shader), texture(texture), amount(amount)
 {
     this->init();
@@ -32,14 +32,14 @@ void ParticleGenerator::Draw()
 {
     // Use additive blending to give it a 'glow' effect
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    this->shader.Use();
+    this->shader->Use();
     for (Particle particle : this->particles)
     {
         if (particle.Life > 0.0f)
         {
-            this->shader.SetVector2f("offset", particle.Position);
-            this->shader.SetVector4f("color", particle.Color);
-            this->texture.Bind();
+            this->shader->SetVector2f("offset", particle.Position);
+            this->shader->SetVector4f("color", particle.Color);
+            this->texture->Bind();
             glBindVertexArray(this->VAO);
             glDrawArrays(GL_TRIANGLES, 0, 6);
             glBindVertexArray(0);

@@ -1,7 +1,7 @@
 #include "SpriteRenderer.h"
 #include <vector>
 
-SpriteRenderer::SpriteRenderer(Shader& shader, Shader& batchShader, GLuint max_batch_size)
+SpriteRenderer::SpriteRenderer(Shader* shader, Shader* batchShader, GLuint max_batch_size)
 {
     this->shader = shader;
     this->batchShader = batchShader;
@@ -16,10 +16,10 @@ SpriteRenderer::~SpriteRenderer()
     glDeleteBuffers(1, &this->modelVBO);
 }
 
-void SpriteRenderer::DrawSprite(Texture2D& texture, glm::vec2 position, glm::vec2 size, GLfloat rotate, glm::vec3 color)
+void SpriteRenderer::DrawSprite(Texture2D* texture, glm::vec2 position, glm::vec2 size, GLfloat rotate, glm::vec3 color)
 {
     // Prepare transformations
-    this->shader.Use();
+    this->shader->Use();
     glm::mat4 model;
     model = glm::translate(model, glm::vec3(position, 0.0f));  // First translate (transformations are: scale happens first, then rotation and then finall translation happens; reversed order)
 
@@ -29,20 +29,20 @@ void SpriteRenderer::DrawSprite(Texture2D& texture, glm::vec2 position, glm::vec
 
     model = glm::scale(model, glm::vec3(size, 1.0f)); // Last scale
 
-    this->shader.SetMatrix4("model", model);
+    this->shader->SetMatrix4("model", model);
 
     // Render textured quad
-    this->shader.SetVector3f("spriteColor", color);
+    this->shader->SetVector3f("spriteColor", color);
 
     glActiveTexture(GL_TEXTURE0);
-    texture.Bind();
+    texture->Bind();
 
     glBindVertexArray(this->quadVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 }
 
-void SpriteRenderer::DrawSpriteBatch(Texture2D& texture, int batch_size, glm::vec2* positions, glm::vec2* sizes, GLfloat* rotates, glm::vec3* colors)
+void SpriteRenderer::DrawSpriteBatch(Texture2D* texture, int batch_size, glm::vec2* positions, glm::vec2* sizes, GLfloat* rotates, glm::vec3* colors)
 {
     std::vector<glm::mat4> models;
     models.resize(batch_size);
@@ -65,9 +65,9 @@ void SpriteRenderer::DrawSpriteBatch(Texture2D& texture, int batch_size, glm::ve
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::mat4) * batch_size, models.data());
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
-    this->batchShader.Use();
+    this->batchShader->Use();
     glActiveTexture(GL_TEXTURE0);
-    texture.Bind();
+    texture->Bind();
 
     glBindVertexArray(this->quadVAO);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batch_size);

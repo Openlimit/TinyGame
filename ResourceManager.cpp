@@ -7,43 +7,52 @@
 #include <stb_image.h>
 
 // Instantiate static variables
-std::map<std::string, Texture2D>    ResourceManager::Textures;
-std::map<std::string, Shader>       ResourceManager::Shaders;
+std::map<std::string, Texture2D*>    ResourceManager::Textures;
+std::map<std::string, Shader*>       ResourceManager::Shaders;
+std::map<std::string, Mesh*>         ResourceManager::Meshes;
 
-
-Shader ResourceManager::LoadShader(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile, std::string name)
+Shader* ResourceManager::LoadShader(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile, std::string name)
 {
     Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
     return Shaders[name];
 }
 
-Shader ResourceManager::GetShader(std::string name)
+Shader* ResourceManager::GetShader(std::string name)
 {
-    return Shaders[name];
+    if (Shaders.find(name) != Shaders.end())
+        return Shaders[name];
+    else
+        return nullptr;
 }
 
-Texture2D ResourceManager::LoadTexture(const GLchar* file, GLboolean alpha, std::string name)
+Texture2D* ResourceManager::LoadTexture(const GLchar* file, GLboolean alpha, std::string name)
 {
     Textures[name] = loadTextureFromFile(file, alpha);
     return Textures[name];
 }
 
-Texture2D ResourceManager::GetTexture(std::string name)
+Texture2D* ResourceManager::GetTexture(std::string name)
 {
-    return Textures[name];
+    if (Textures.find(name) != Textures.end())
+        return Textures[name];
+    else
+        return nullptr;
 }
 
 void ResourceManager::Clear()
-{
-    // (Properly) delete all shaders	
+{	
     for (auto iter : Shaders)
-        glDeleteProgram(iter.second.ID);
-    // (Properly) delete all textures
+        if (iter.second != nullptr)
+            delete iter.second;
     for (auto iter : Textures)
-        glDeleteTextures(1, &iter.second.ID);
+        if (iter.second != nullptr)
+            delete iter.second;
+    for (auto iter : Meshes)
+        if (iter.second != nullptr)
+            delete iter.second;
 }
 
-Shader ResourceManager::loadShaderFromFile(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile)
+Shader* ResourceManager::loadShaderFromFile(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile)
 {
     // 1. Retrieve the vertex/fragment source code from filePath
     std::string vertexCode;
@@ -82,19 +91,19 @@ Shader ResourceManager::loadShaderFromFile(const GLchar* vShaderFile, const GLch
     const GLchar* fShaderCode = fragmentCode.c_str();
     const GLchar* gShaderCode = geometryCode.c_str();
     // 2. Now create shader object from source code
-    Shader shader;
-    shader.Compile(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr);
+    Shader* shader = new Shader();
+    shader->Compile(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr);
     return shader;
 }
 
-Texture2D ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alpha)
+Texture2D* ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alpha)
 {
     // Create Texture object
-    Texture2D texture;
+    Texture2D* texture = new Texture2D();
     if (alpha)
     {
-        texture.Internal_Format = GL_RGBA;
-        texture.Image_Format = GL_RGBA;
+        texture->Internal_Format = GL_RGBA;
+        texture->Image_Format = GL_RGBA;
     }
     // Load image
     int width, height, nrChannels;
@@ -104,8 +113,90 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alp
         return texture;
     }
     // Now generate texture
-    texture.Generate(width, height, image);
+    texture->Generate(width, height, image);
     // And finally free image data
     stbi_image_free(image);
     return texture;
+}
+
+Mesh* ResourceManager::LoadMesh(const GLchar* file, std::string name)
+{
+    std::ifstream in(file, std::ios::in);
+    if (in.fail()) return nullptr;
+
+    Mesh* mesh = new Mesh();
+    int count = -1;
+    while (!in.eof()) {
+        std::string line;
+        std::getline(in, line);
+        std::istringstream iss(line.c_str());
+        char trash;
+        if (!line.compare(0, 2, "v ")) {
+            iss >> trash;
+            glm::vec3 vec;
+            iss >> vec[0] >> vec[1] >> vec[2];
+            mesh->vertices.emplace_back(vec);
+        }
+        else if (!line.compare(0, 3, "vt ")) {
+            iss >> trash >> trash;
+            glm::vec3 vec;
+            int i = 0;
+            float v;
+            while (iss >> v)
+            {
+                vec[i++] = v;
+            }
+            if (i == 2)
+                vec[2] = 0;
+            mesh->text_coords.emplace_back(vec);
+        }
+        else if (!line.compare(0, 3, "vn ")) {
+            iss >> trash >> trash;
+            glm::vec3 vec;
+            iss >> vec[0] >> vec[1] >> vec[2];
+            mesh->normals.emplace_back(vec);
+        }
+        else if (!line.compare(0, 2, "f ")) {
+            if (count < 0)
+            {
+                count = 0;
+                for (auto iter : line)
+                {
+                    if (iter == '/')
+                        count++;
+                }
+                count /= 3;
+                assert(count < 3);
+            }
+            
+            iss >> trash;
+            int id;
+            for (int i = 0; i < 3; i++)
+            {
+                iss >> id;
+                mesh->indices.emplace_back(id - 1);
+
+                if (count > 0)
+                {
+                    iss >> trash >> id;
+                    mesh->text_indices.emplace_back(id - 1);
+                }
+                if (count > 1)
+                {
+                    iss >> trash >> id;
+                    mesh->normal_indices.emplace_back(id - 1);
+                }
+            }
+        }
+    }
+    Meshes[name] = mesh;
+    return mesh;
+}
+
+Mesh* ResourceManager::GetMesh(std::string name)
+{
+    if (Meshes.find(name) != Meshes.end())
+        return Meshes[name];
+    else
+        return nullptr;
 }

@@ -1,22 +1,25 @@
 #pragma once
 #include <glad/glad.h>
 
-#include "RenderObject.h"
+#include "Scene.h"
 #include "PostProcessor.h"
 
 class Renderer
 {
 public:
+    enum RENDER_TYPE
+    {
+        FORWARD,
+        DEFFERED
+    };
 
     Renderer();
 
     virtual ~Renderer();
 
-    virtual void Draw(RenderObject* renderObject) = 0;
+    virtual void Draw(Scene *scene) = 0;
 
-    virtual void Draw(std::vector<RenderObject*>& renderObjects) = 0;
-
-    void addPostProcessor(Shader shader, int width, int height);
+    void addPostProcessor(Shader* shader, int width, int height);
 
 protected:
     PostProcessor* postProcessor;

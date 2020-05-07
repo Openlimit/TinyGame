@@ -11,17 +11,17 @@ class SpriteRenderer
 {
 public:
     // Constructor (inits shaders/shapes)
-    SpriteRenderer(Shader& shader, Shader& instanceShader, GLuint max_batch_size = 500);
+    SpriteRenderer(Shader* shader, Shader* instanceShader, GLuint max_batch_size = 500);
     // Destructor
     ~SpriteRenderer();
     // Renders a defined quad textured with given sprite
-    void DrawSprite(Texture2D& texture, glm::vec2 position, glm::vec2 size = glm::vec2(10, 10), GLfloat rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f));
+    void DrawSprite(Texture2D* texture, glm::vec2 position, glm::vec2 size = glm::vec2(10, 10), GLfloat rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f));
 
-    void DrawSpriteBatch(Texture2D& texture, int batch_size, glm::vec2* positions, glm::vec2* sizes, GLfloat* rotates, glm::vec3* colors);
+    void DrawSpriteBatch(Texture2D* texture, int batch_size, glm::vec2* positions, glm::vec2* sizes, GLfloat* rotates, glm::vec3* colors);
 private:
     // Render state
-    Shader shader;
-    Shader batchShader;
+    Shader* shader;
+    Shader* batchShader;
     GLuint quadVAO;
     GLuint colorVBO;
     GLuint modelVBO;

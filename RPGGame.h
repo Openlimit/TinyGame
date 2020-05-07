@@ -1,15 +1,15 @@
 #pragma once
-#include <vector>
 #include "GameBase.h"
+#include "Camera.h"
 
-class WaterGame :public GameBase
+class RPGGame :public GameBase
 {
 public:
-    Shader* postShader;
+
     float time;
 
-    WaterGame(GLuint width, GLuint height);
-    ~WaterGame();
+    RPGGame(GLuint width, GLuint height);
+    ~RPGGame();
 
     void Init() override;
     void ProcessInput(GLfloat dt) override;

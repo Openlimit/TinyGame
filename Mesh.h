@@ -1,18 +1,17 @@
 #pragma once
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <vector>
-#include <string>
+#include "OpenGL_Common.h"
 
-#include "Texture2D.h"
-#include "Shader.h"
 
 class Mesh {
 public:
     /*  Mesh Data  */
     std::vector<glm::vec3> vertices;
+    std::vector<glm::vec3> normals;
+    std::vector<glm::vec3> text_coords;
     std::vector<GLuint> indices;
+    std::vector<GLuint> normal_indices;
+    std::vector<GLuint> text_indices;
 
     /*  Functions  */
     // constructor

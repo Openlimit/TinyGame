@@ -9,9 +9,7 @@ public:
 
     ~DeferredRenderer();
 
-    void Draw(RenderObject* renderObject) override;
-
-    void Draw(std::vector<RenderObject*>& renderObjects) override;
+    void Draw(Scene* scene) override;
 
 private:
     Texture2D* gPosition;

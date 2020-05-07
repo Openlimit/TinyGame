@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-PostProcessor::PostProcessor(Shader shader, GLuint width, GLuint height)
+PostProcessor::PostProcessor(Shader* shader, GLuint width, GLuint height)
     : PostProcessingShader(shader), Width(width), Height(height)
 {
     // Initializeframebuffer object
@@ -42,7 +42,7 @@ void PostProcessor::Render()
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    this->PostProcessingShader.Use();
+    this->PostProcessingShader->Use();
     
     // Render textured quad
     glActiveTexture(GL_TEXTURE0);
@@ -60,7 +60,7 @@ void PostProcessor::Render(Texture2D* gPosition)
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    this->PostProcessingShader.Use();
+    this->PostProcessingShader->Use();
 
     // Render textured quad
     glActiveTexture(GL_TEXTURE0);

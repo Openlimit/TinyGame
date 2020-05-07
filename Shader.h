@@ -1,9 +1,7 @@
 #pragma once
 #include <string>
 
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "OpenGL_Common.h"
 
 
 // General purpsoe shader object. Compiles from file, generates
@@ -14,10 +12,18 @@ class Shader
 public:
     // State
     GLuint ID;
+    bool auto_update_VP;
+
     // Constructor
-    Shader() { }
+    Shader():auto_update_VP(false) { }
+
+    ~Shader()
+    {
+        glDeleteProgram(this->ID);
+    }
+
     // Sets the current shader as active
-    Shader& Use();
+    Shader* Use();
     // Compiles the shader from given source code
     void    Compile(const GLchar* vertexSource, const GLchar* fragmentSource, const GLchar* geometrySource = nullptr); // Note: geometry source code is optional 
     // Utility functions

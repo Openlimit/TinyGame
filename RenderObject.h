@@ -1,5 +1,4 @@
 #pragma once
-#include <glad/glad.h>
 #include <vector>
 
 #include "Texture2D.h"
@@ -10,17 +9,18 @@ class RenderObject
 {
 public:
 	Mesh* mesh;
-	Shader forwardShader;
-    Shader defferedGeoShader, defferedShadingShader;
+	Shader* forwardShader;
+    Shader* defferedGeoShader;
+    Shader* defferedShadingShader;
 	std::vector<Texture2D*> textures;
     GLuint VAO;
 
-	RenderObject(Mesh* mesh, Shader shader, std::vector<Texture2D*>& textures) :mesh(mesh), forwardShader(shader), textures(textures)
+	RenderObject(Mesh* mesh, Shader* shader, std::vector<Texture2D*>& textures) :mesh(mesh), forwardShader(shader), textures(textures)
 	{
         setup();
 	}
 
-    RenderObject(Mesh* mesh, Shader shader) :mesh(mesh), forwardShader(shader)
+    RenderObject(Mesh* mesh, Shader* shader) :mesh(mesh), forwardShader(shader)
     {
         setup();
     }
@@ -34,15 +34,6 @@ public:
         glDeleteBuffers(1, &VBO);
         glDeleteBuffers(1, &EBO);
         glDeleteVertexArrays(1, &VAO);
-
-        if (mesh != nullptr)
-            delete mesh;
-
-        for (int i = 0; i < textures.size(); i++)
-        {
-            if (textures[i] != nullptr)
-                delete textures[i];
-        }
     }
 
 private:

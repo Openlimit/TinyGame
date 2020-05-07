@@ -16,12 +16,12 @@ class PostProcessor
 {
 public:
     // State
-    Shader PostProcessingShader;
+    Shader* PostProcessingShader;
     Texture2D* colorTexture;
     GLuint Width, Height;
 
     // Constructor
-    PostProcessor(Shader shader, GLuint width, GLuint height);
+    PostProcessor(Shader* shader, GLuint width, GLuint height);
 
     ~PostProcessor();
 

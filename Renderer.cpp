@@ -9,7 +9,7 @@ Renderer::~Renderer()
         delete postProcessor;
 }
 
-void Renderer::addPostProcessor(Shader shader, int width, int height)
+void Renderer::addPostProcessor(Shader* shader, int width, int height)
 {
     postProcessor = new PostProcessor(shader, width, height);
 }

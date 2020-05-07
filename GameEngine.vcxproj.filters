@@ -64,6 +64,15 @@
     <Filter Include="资源文件\shaders\engine\deffered">
       <UniqueIdentifier>{1b9c6ba7-50c7-4d69-b328-00c7d3748564}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Games\RPG">
+      <UniqueIdentifier>{87b5ea27-474c-4111-9fa7-83d1418faaff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Games\RPG">
+      <UniqueIdentifier>{dbffa006-e59a-4050-beb3-02d6a53f1467}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Engine\Camera">
+      <UniqueIdentifier>{12954284-d53b-4f0f-b4ac-55f81165da13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -114,6 +123,9 @@
     <ClCompile Include="PostProcessor.cpp">
       <Filter>源文件\Engine\Render</Filter>
     </ClCompile>
+    <ClCompile Include="RPGGame.cpp">
+      <Filter>源文件\Games\RPG</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -135,9 +147,6 @@
       <Filter>头文件\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Texture2D.h">
-      <Filter>头文件\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
       <Filter>头文件\Engine</Filter>
     </ClInclude>
     <ClInclude Include="BallObject.h">
@@ -172,6 +181,21 @@
     </ClInclude>
     <ClInclude Include="PostProcessor.h">
       <Filter>头文件\Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="RPGGame.h">
+      <Filter>头文件\Games\RPG</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>头文件\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL_Common.h">
+      <Filter>头文件\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>头文件\Engine\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSCamera.h">
+      <Filter>头文件\Engine\Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

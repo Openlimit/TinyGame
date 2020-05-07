@@ -89,7 +89,7 @@ void DeferredRenderer::initRenderData()
 	glBindVertexArray(0);
 }
 
-void DeferredRenderer::Draw(RenderObject* renderObject)
+void DeferredRenderer::Draw(Scene *scene)
 {
 	//Geometric Pass
 	glBindFramebuffer(GL_FRAMEBUFFER, this->G_Buffer);
@@ -97,61 +97,18 @@ void DeferredRenderer::Draw(RenderObject* renderObject)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	renderObject->defferedGeoShader.Use();
-	for (int i = 0; i < renderObject->textures.size(); i++)
+	for (auto iter: scene->renderObjects)
 	{
-		glActiveTexture(GL_TEXTURE0 + i);
-		renderObject->textures[i]->Bind();
-	}
-
-	glBindVertexArray(renderObject->VAO);
-	glDrawElements(GL_TRIANGLES, renderObject->mesh->indices.size(), GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-
-	//Shading Pass
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	if (postProcessor != nullptr)
-		postProcessor->BeginRender();
-
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	renderObject->defferedShadingShader.Use();
-
-	glActiveTexture(GL_TEXTURE0);
-	this->gPosition->Bind();
-	glActiveTexture(GL_TEXTURE1);
-	this->gNormal->Bind();
-	glActiveTexture(GL_TEXTURE2);
-	this->gAlbedoSpec->Bind();
-
-	glBindVertexArray(this->VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindVertexArray(0);
-
-	if (postProcessor != nullptr)
-		postProcessor->Render(this->gPosition);
-}
-
-void DeferredRenderer::Draw(std::vector<RenderObject*>& renderObjects)
-{
-	//Geometric Pass
-	glBindFramebuffer(GL_FRAMEBUFFER, this->G_Buffer);
-
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	for (int i = 0; i < renderObjects.size(); i++)
-	{
-		renderObjects[i]->defferedGeoShader.Use();
-		for (int j = 0; j < renderObjects[i]->textures.size(); j++)
+		auto renderObject = iter.second;
+		renderObject->defferedGeoShader->Use();
+		for (int j = 0; j < renderObject->textures.size(); j++)
 		{
 			glActiveTexture(GL_TEXTURE0 + j);
-			renderObjects[i]->textures[j]->Bind();
+			renderObject->textures[j]->Bind();
 		}
 
-		glBindVertexArray(renderObjects[i]->VAO);
-		glDrawElements(GL_TRIANGLES, renderObjects[i]->mesh->indices.size(), GL_UNSIGNED_INT, 0);
+		glBindVertexArray(renderObject->VAO);
+		glDrawElements(GL_TRIANGLES, renderObject->mesh->indices.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
 
@@ -162,8 +119,9 @@ void DeferredRenderer::Draw(std::vector<RenderObject*>& renderObjects)
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	renderObjects[0]->defferedShadingShader.Use();
+	
+	auto firstObject = scene->renderObjects.begin();
+	firstObject->second->defferedShadingShader->Use();
 
 	glActiveTexture(GL_TEXTURE0);
 	this->gPosition->Bind();

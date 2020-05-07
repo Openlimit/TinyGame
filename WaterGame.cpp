@@ -1,6 +1,8 @@
 #include "WaterGame.h"
 #include <random>
 
+#include "FPSCamera.h"
+
 void createGrid(glm::vec2 topLeft, glm::vec2 downRight, float H, int width, int height,
     std::vector<glm::vec3> &vertices, std::vector<GLuint> &indices)
 {
@@ -61,23 +63,20 @@ void createGrid(glm::vec2 topLeft, glm::vec2 downRight, float H, int width, int 
     }
 }
 
-WaterGame::WaterGame(GLuint width, GLuint height) : Width(width), Height(height)
+WaterGame::WaterGame(GLuint width, GLuint height) : GameBase(width, height, Renderer::DEFFERED)
 {
 
 }
 
 WaterGame::~WaterGame()
 {
-    for (int i = 0; i < renderObjects.size(); i++)
-    {
-        delete renderObjects[i];
-    }
+    
 }
 
 void WaterGame::Init()
 {
     this->time = 0;
-	this->camera = Camera(glm::vec3(0, 5, 30), glm::vec3(0, 1, 0));
+	this->camera = new FPSCamera(glm::vec3(0, 5, 30), glm::vec3(0, 1, 0));
 
     /*std::vector<glm::vec3> vertices;
     std::vector<GLuint> indices;
@@ -130,85 +129,44 @@ void WaterGame::Init()
     RenderObject* groundObj = new RenderObject(new Quad(-10, 10, -10, 10, 0, Quad::XZ));
     groundObj->defferedGeoShader = ResourceManager::LoadShader("shaders/mesh_geo.vs", "shaders/mesh_geo.frag", nullptr, "mesh_geo");
     groundObj->defferedShadingShader = ResourceManager::LoadShader("shaders/screen_quad.vs", "shaders/mesh_shading.frag", nullptr, "mesh_shading");
-    groundObj->defferedGeoShader.Use().SetMatrix4("model", glm::mat4());
-    groundObj->defferedGeoShader.SetVector3f("color", glm::vec3(0.5, 0.5, 0.5));
-    groundObj->defferedShadingShader.Use().SetInteger("gPosition", 0);
-    groundObj->defferedShadingShader.SetInteger("gNormal", 1);
-    groundObj->defferedShadingShader.SetInteger("gAlbedoSpec", 2);
-    this->renderObjects.emplace_back(groundObj);
+    groundObj->defferedGeoShader->auto_update_VP = true;
+    groundObj->defferedGeoShader->Use()->SetMatrix4("model", glm::mat4());
+    groundObj->defferedGeoShader->SetVector3f("color", glm::vec3(0.5, 0.5, 0.5));
+    groundObj->defferedShadingShader->Use()->SetInteger("gPosition", 0);
+    groundObj->defferedShadingShader->SetInteger("gNormal", 1);
+    groundObj->defferedShadingShader->SetInteger("gAlbedoSpec", 2);
+    this->scene->addRenderObject(groundObj, "ground");
 
     this->postShader = ResourceManager::LoadShader("shaders/screen_quad.vs", "shaders/water_postprocess.frag", nullptr, "water_postprocess");
-    this->postShader.Use();
-    this->postShader.SetInteger("scene_color", 0);
-    this->postShader.SetInteger("gPosition", 1);
-    this->postShader.SetFloat("near_plane", 0.1);
-    this->postShader.SetFloat("far_plane", 100);
-    this->postShader.SetFloat("fog_start", 20);
-    this->postShader.SetFloat("fog_end", 50);
-    this->postShader.SetFloat("fog_density", 0.02);
-    this->postShader.SetVector3f("fog_color", glm::vec3(0.3, 0.73, 0.63));
+    this->postShader->Use();
+    this->postShader->SetInteger("scene_color", 0);
+    this->postShader->SetInteger("gPosition", 1);
+    this->postShader->SetFloat("near_plane", 0.1);
+    this->postShader->SetFloat("far_plane", 100);
+    this->postShader->SetFloat("fog_start", 20);
+    this->postShader->SetFloat("fog_end", 50);
+    this->postShader->SetFloat("fog_density", 0.02);
+    this->postShader->SetVector3f("fog_color", glm::vec3(0.3, 0.73, 0.63));
 
-    this->postShader.SetVector3f("cam_pos", this->camera.Position);
-    this->postShader.SetVector3f("light_color", glm::vec3(10, 10, 10));
-    this->postShader.SetVector3f("light_pos", glm::vec3(10, 10, 10));
+    this->postShader->SetVector3f("cam_pos", this->camera->Position);
+    this->postShader->SetVector3f("light_color", glm::vec3(10, 10, 10));
+    this->postShader->SetVector3f("light_pos", glm::vec3(10, 10, 10));
     //this->postShader.SetVector3f("extinction", glm::vec3(1.2, 0.31, 0.46));
-    this->postShader.SetVector3f("extinction", glm::vec3(0.46, 0.31, 1.2));
-    this->postShader.SetInteger("step_num", 4);
-    this->postShader.SetFloat("distance_ratio", 0.05);
+    this->postShader->SetVector3f("extinction", glm::vec3(0.46, 0.31, 1.2));
+    this->postShader->SetInteger("step_num", 4);
+    this->postShader->SetFloat("distance_ratio", 0.05);
 
-    this->renderer = new DeferredRenderer(Width, Height);
     this->renderer->addPostProcessor(this->postShader, Width, Height);
-}
-
-void WaterGame::ProcessInput(GLfloat dt)
-{
-    if (this->Keys[GLFW_KEY_W])
-        this->camera.ProcessKeyboard(FORWARD, dt);
-    if (this->Keys[GLFW_KEY_S])
-        this->camera.ProcessKeyboard(BACKWARD, dt);
-    if (this->Keys[GLFW_KEY_A])
-        this->camera.ProcessKeyboard(LEFT, dt);
-    if (this->Keys[GLFW_KEY_D])
-        this->camera.ProcessKeyboard(RIGHT, dt);
-}
-
-float lastX = 0;
-float lastY = 0;
-bool firstMouse = true;
-void WaterGame::ProcessMouse(double xpos, double ypos)
-{
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
-
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-    lastX = xpos;
-    lastY = ypos;
-
-    this->camera.ProcessMouseMovement(xoffset, yoffset);
-}
-
-void WaterGame::ProcessScroll(double xoffset, double yoffset)
-{
-    this->camera.ProcessMouseScroll(yoffset);
 }
 
 void WaterGame::Update(GLfloat dt)
 {
-    glm::mat4 view = this->camera.GetViewMatrix();
-    glm::mat4 projection = glm::perspective(glm::radians(this->camera.Zoom), (float)Width / (float)Height, 0.1f, 100.0f);
-    
-    this->postShader.Use().SetVector3f("cam_pos", this->camera.Position);
+    this->postShader->Use()->SetVector3f("cam_pos", this->camera->Position);
 
     /*this->renderObjects[0]->forwardShader.Use();
     this->renderObjects[0]->forwardShader.SetMatrix4("view", view);
     this->renderObjects[0]->forwardShader.SetMatrix4("projection", projection);
-    
+
     this->time += dt;
     this->renderObjects[0]->forwardShader.SetFloat("time", this->time);
     this->renderObjects[0]->forwardShader.SetVector3f("view_pos", this->camera.Position);
@@ -216,13 +174,20 @@ void WaterGame::Update(GLfloat dt)
     this->renderObjects[1]->forwardShader.Use();
     this->renderObjects[1]->forwardShader.SetMatrix4("view", view);
     this->renderObjects[1]->forwardShader.SetMatrix4("projection", projection);*/
-
-    this->renderObjects[0]->defferedGeoShader.Use();
-    this->renderObjects[0]->defferedGeoShader.SetMatrix4("view", view);
-    this->renderObjects[0]->defferedGeoShader.SetMatrix4("projection", projection);
 }
 
-void WaterGame::Render()
+void WaterGame::ProcessInput(GLfloat dt)
 {
-    this->renderer->Draw(renderObjects);
+    
 }
+
+void WaterGame::ProcessMouse(double xpos, double ypos)
+{
+    
+}
+
+void WaterGame::ProcessScroll(double xoffset, double yoffset)
+{
+    
+}
+
