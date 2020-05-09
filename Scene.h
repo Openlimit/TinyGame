@@ -1,13 +1,17 @@
 #pragma once
 #include <map>
+#include <vector>
 #include <string>
 
 #include "RenderObject.h"
+#include "Light.h"
 
 class Scene
 {
 public:
 	std::map<std::string, RenderObject*> renderObjects;
+	DirectionLight directionLight;
+	std::vector<PointLight> lights;
 
 	Scene() {}
 	~Scene()
@@ -19,9 +23,15 @@ public:
 		}
 	}
 
-	void addRenderObject(Mesh* mesh, Shader* shader, std::string name)
+	void addRenderObject(Mesh* mesh, Material* material, Transform transform, std::string name)
 	{
-		auto obj = new RenderObject(mesh, shader);
+		auto obj = new RenderObject(mesh, material, transform);
+		renderObjects[name] = obj;
+	}
+
+	void addRenderObject(Mesh* mesh, Material* material, std::string name)
+	{
+		auto obj = new RenderObject(mesh, material);
 		renderObjects[name] = obj;
 	}
 
@@ -36,26 +46,5 @@ public:
 			return renderObjects[name];
 		else
 			return nullptr;
-	}
-
-	void update_VP(glm::mat4 view, glm::mat4 projection)
-	{
-		for (auto iter : renderObjects)
-		{
-			Shader* fShader = iter.second->forwardShader;
-			Shader* dSahder = iter.second->defferedGeoShader;
-			if (fShader != nullptr && fShader->auto_update_VP)
-			{
-				fShader->Use();
-				fShader->SetMatrix4("view", view);
-				fShader->SetMatrix4("projection", projection);
-			}
-			if (dSahder != nullptr && dSahder->auto_update_VP)
-			{
-				dSahder->Use();
-				dSahder->SetMatrix4("view", view);
-				dSahder->SetMatrix4("projection", projection);
-			}
-		}
 	}
 };

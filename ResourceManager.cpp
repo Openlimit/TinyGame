@@ -10,6 +10,7 @@
 std::map<std::string, Texture2D*>    ResourceManager::Textures;
 std::map<std::string, Shader*>       ResourceManager::Shaders;
 std::map<std::string, Mesh*>         ResourceManager::Meshes;
+std::map<std::string, Material*>     ResourceManager::Materials;
 
 Shader* ResourceManager::LoadShader(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile, std::string name)
 {
@@ -48,6 +49,9 @@ void ResourceManager::Clear()
         if (iter.second != nullptr)
             delete iter.second;
     for (auto iter : Meshes)
+        if (iter.second != nullptr)
+            delete iter.second;
+    for (auto iter : Materials)
         if (iter.second != nullptr)
             delete iter.second;
 }
@@ -125,8 +129,12 @@ Mesh* ResourceManager::LoadMesh(const GLchar* file, std::string name)
     if (in.fail()) return nullptr;
 
     Mesh* mesh = new Mesh();
+    std::vector<glm::vec3> vertices;
+    std::vector<glm::vec3> text_coords;
+    std::vector<glm::vec3> normals;
     int count = -1;
-    while (!in.eof()) {
+    while (!in.eof()) 
+    {
         std::string line;
         std::getline(in, line);
         std::istringstream iss(line.c_str());
@@ -135,7 +143,7 @@ Mesh* ResourceManager::LoadMesh(const GLchar* file, std::string name)
             iss >> trash;
             glm::vec3 vec;
             iss >> vec[0] >> vec[1] >> vec[2];
-            mesh->vertices.emplace_back(vec);
+            vertices.emplace_back(vec);
         }
         else if (!line.compare(0, 3, "vt ")) {
             iss >> trash >> trash;
@@ -148,13 +156,13 @@ Mesh* ResourceManager::LoadMesh(const GLchar* file, std::string name)
             }
             if (i == 2)
                 vec[2] = 0;
-            mesh->text_coords.emplace_back(vec);
+            text_coords.emplace_back(vec);
         }
         else if (!line.compare(0, 3, "vn ")) {
             iss >> trash >> trash;
             glm::vec3 vec;
             iss >> vec[0] >> vec[1] >> vec[2];
-            mesh->normals.emplace_back(vec);
+            normals.emplace_back(vec);
         }
         else if (!line.compare(0, 2, "f ")) {
             if (count < 0)
@@ -170,22 +178,25 @@ Mesh* ResourceManager::LoadMesh(const GLchar* file, std::string name)
             }
             
             iss >> trash;
-            int id;
+            int id, t_id, n_id;
             for (int i = 0; i < 3; i++)
             {
                 iss >> id;
-                mesh->indices.emplace_back(id - 1);
+                Mesh::Vertex vertex;
+                vertex.Position = vertices[id - 1];
 
                 if (count > 0)
                 {
-                    iss >> trash >> id;
-                    mesh->text_indices.emplace_back(id - 1);
+                    iss >> trash >> t_id;
+                    vertex.TexCoords = text_coords[t_id - 1];
                 }
                 if (count > 1)
                 {
-                    iss >> trash >> id;
-                    mesh->normal_indices.emplace_back(id - 1);
+                    iss >> trash >> n_id;
+                    vertex.Normal = normals[n_id - 1];
                 }
+
+                mesh->vertices.emplace_back(vertex);
             }
         }
     }
@@ -197,6 +208,32 @@ Mesh* ResourceManager::GetMesh(std::string name)
 {
     if (Meshes.find(name) != Meshes.end())
         return Meshes[name];
+    else
+        return nullptr;
+}
+
+Material* ResourceManager::LoadMaterial(Material::MaterialType type, std::string name)
+{
+    switch (type)
+    {
+    case Material::MaterialType::DIFFUSE:
+        Shader *shader = GetShader("diffuse");
+        if (shader == nullptr)
+            shader = LoadShader("shaders/diffuse.vs", "shaders/diffuse.frag", nullptr, "diffuse");
+        shader->auto_update_VP = true;
+        auto material = new DiffuseMaterial();
+        material->forwardShader = shader;
+        Materials[name] = material;
+        break;
+    }
+
+    return Materials[name];
+}
+
+Material* ResourceManager::GetMaterial(std::string name)
+{
+    if (Materials.find(name) != Materials.end())
+        return Materials[name];
     else
         return nullptr;
 }

@@ -2,14 +2,6 @@
 #include <vector>
 #include "OpenGL_Common.h"
 
-// Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
-enum Camera_Movement {
-    FORWARD,
-    BACKWARD,
-    LEFT,
-    RIGHT
-};
-
 // Default camera values
 const float YAW = -90.0f;
 const float PITCH = 0.0f;
@@ -22,6 +14,13 @@ const float ZOOM = 45.0f;
 class Camera
 {
 public:
+    enum class Camera_Movement {
+        FORWARD,
+        BACKWARD,
+        LEFT,
+        RIGHT
+    };
+
     // Camera Attributes
     glm::vec3 Position;
     glm::vec3 Front;

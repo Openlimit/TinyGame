@@ -100,15 +100,19 @@ void DeferredRenderer::Draw(Scene *scene)
 	for (auto iter: scene->renderObjects)
 	{
 		auto renderObject = iter.second;
-		renderObject->defferedGeoShader->Use();
-		for (int j = 0; j < renderObject->textures.size(); j++)
+		renderObject->material->defferedGeoShader->Use();
+		glm::mat4 model = renderObject->transform.getTransform();
+		renderObject->material->defferedGeoShader->SetMatrix4("model", model);
+		renderObject->material->updateDefferedGeoShader();
+		for (int j = 0; j < renderObject->material->textures.size(); j++)
 		{
 			glActiveTexture(GL_TEXTURE0 + j);
-			renderObject->textures[j]->Bind();
+			renderObject->material->textures[j]->Bind();
 		}
 
 		glBindVertexArray(renderObject->VAO);
-		glDrawElements(GL_TRIANGLES, renderObject->mesh->indices.size(), GL_UNSIGNED_INT, 0);
+		//glDrawElements(GL_TRIANGLES, renderObject->mesh->indices.size(), GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, renderObject->mesh->vertices.size());
 		glBindVertexArray(0);
 	}
 
@@ -121,7 +125,8 @@ void DeferredRenderer::Draw(Scene *scene)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	auto firstObject = scene->renderObjects.begin();
-	firstObject->second->defferedShadingShader->Use();
+	firstObject->second->material->defferedShadingShader->Use();
+	firstObject->second->material->updateDefferedShadingShader();
 
 	glActiveTexture(GL_TEXTURE0);
 	this->gPosition->Bind();

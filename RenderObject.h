@@ -1,26 +1,24 @@
 #pragma once
 #include <vector>
 
-#include "Texture2D.h"
-#include "Shader.h"
+#include "Material.h"
 #include "Mesh.h"
+#include "Transform.h"
 
 class RenderObject
 {
 public:
 	Mesh* mesh;
-	Shader* forwardShader;
-    Shader* defferedGeoShader;
-    Shader* defferedShadingShader;
-	std::vector<Texture2D*> textures;
+    Transform transform;
+    Material* material;
     GLuint VAO;
 
-	RenderObject(Mesh* mesh, Shader* shader, std::vector<Texture2D*>& textures) :mesh(mesh), forwardShader(shader), textures(textures)
+	RenderObject(Mesh* mesh, Material* material, Transform transform) :mesh(mesh), transform(transform), material(material)
 	{
         setup();
 	}
 
-    RenderObject(Mesh* mesh, Shader* shader) :mesh(mesh), forwardShader(shader)
+    RenderObject(Mesh* mesh, Material* material) :mesh(mesh), material(material)
     {
         setup();
     }
@@ -32,7 +30,7 @@ public:
 
     ~RenderObject() {
         glDeleteBuffers(1, &VBO);
-        glDeleteBuffers(1, &EBO);
+        //glDeleteBuffers(1, &EBO);
         glDeleteVertexArrays(1, &VAO);
     }
 
@@ -44,20 +42,26 @@ private:
         // create buffers/arrays
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
-        glGenBuffers(1, &EBO);
+        //glGenBuffers(1, &EBO);
 
         glBindVertexArray(VAO);
         // load data into vertex buffers
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, mesh->vertices.size() * sizeof(glm::vec3), &mesh->vertices[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, mesh->vertices.size() * sizeof(Mesh::Vertex), &mesh->vertices[0], GL_STATIC_DRAW);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indices.size() * sizeof(GLuint), &mesh->indices[0], GL_STATIC_DRAW);
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        //glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indices.size() * sizeof(GLuint), &mesh->indices[0], GL_STATIC_DRAW);
 
         // set the vertex attribute pointers
         // vertex Positions
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)0);
+        // vertex normals
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Mesh::Vertex, Normal));
+        // vertex texture coords
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Mesh::Vertex, TexCoords));
 
         glBindVertexArray(0);
     }

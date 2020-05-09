@@ -23,13 +23,13 @@ public:
     void ProcessInput(GLboolean* Keys, GLfloat dt) override
     {
         if (Keys[GLFW_KEY_W])
-            ProcessKeyboard(FORWARD, dt);
+            ProcessKeyboard(Camera_Movement::FORWARD, dt);
         if (Keys[GLFW_KEY_S])
-            ProcessKeyboard(BACKWARD, dt);
+            ProcessKeyboard(Camera_Movement::BACKWARD, dt);
         if (Keys[GLFW_KEY_A])
-            ProcessKeyboard(LEFT, dt);
+            ProcessKeyboard(Camera_Movement::LEFT, dt);
         if (Keys[GLFW_KEY_D])
-            ProcessKeyboard(RIGHT, dt);
+            ProcessKeyboard(Camera_Movement::RIGHT, dt);
     }
 
     void ProcessMouse(double xpos, double ypos) override
@@ -59,13 +59,13 @@ private:
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
         float velocity = MovementSpeed * deltaTime;
-        if (direction == FORWARD)
+        if (direction == Camera_Movement::FORWARD)
             Position += Front * velocity;
-        if (direction == BACKWARD)
+        if (direction == Camera_Movement::BACKWARD)
             Position -= Front * velocity;
-        if (direction == LEFT)
+        if (direction == Camera_Movement::LEFT)
             Position -= Right * velocity;
-        if (direction == RIGHT)
+        if (direction == Camera_Movement::RIGHT)
             Position += Right * velocity;
     }
 

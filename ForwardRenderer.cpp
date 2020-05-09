@@ -17,15 +17,19 @@ void ForwardRenderer::Draw(Scene* scene)
     for (auto iter : scene->renderObjects)
     {
         auto renderObject = iter.second;
-        renderObject->forwardShader->Use();
-        for (int j = 0; j < renderObject->textures.size(); j++)
+        renderObject->material->forwardShader->Use();
+        glm::mat4 model = renderObject->transform.getTransform();
+        renderObject->material->forwardShader->SetMatrix4("model", model);
+        renderObject->material->updateForwardShader();
+        for (int j = 0; j < renderObject->material->textures.size(); j++)
         {
             glActiveTexture(GL_TEXTURE0 + j);
-            renderObject->textures[j]->Bind();
+            renderObject->material->textures[j]->Bind();
         }
 
         glBindVertexArray(renderObject->VAO);
-        glDrawElements(GL_TRIANGLES, renderObject->mesh->indices.size(), GL_UNSIGNED_INT, 0);
+        //glDrawElements(GL_TRIANGLES, renderObject->mesh->indices.size(), GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, renderObject->mesh->vertices.size());
         glBindVertexArray(0);
     }
 

@@ -63,7 +63,7 @@ void createGrid(glm::vec2 topLeft, glm::vec2 downRight, float H, int width, int 
     }
 }
 
-WaterGame::WaterGame(GLuint width, GLuint height) : GameBase(width, height, Renderer::DEFFERED)
+WaterGame::WaterGame(GLuint width, GLuint height) : GameBase(width, height, Renderer::RendererType::DEFFERED)
 {
 
 }
@@ -125,17 +125,6 @@ void WaterGame::Init()
 
     //this->renderObjects.emplace_back(new RenderObject(water_plane, waterShader));
     //this->renderObjects.emplace_back(new RenderObject(ground, groundShader));
-
-    RenderObject* groundObj = new RenderObject(new Quad(-10, 10, -10, 10, 0, Quad::XZ));
-    groundObj->defferedGeoShader = ResourceManager::LoadShader("shaders/mesh_geo.vs", "shaders/mesh_geo.frag", nullptr, "mesh_geo");
-    groundObj->defferedShadingShader = ResourceManager::LoadShader("shaders/screen_quad.vs", "shaders/mesh_shading.frag", nullptr, "mesh_shading");
-    groundObj->defferedGeoShader->auto_update_VP = true;
-    groundObj->defferedGeoShader->Use()->SetMatrix4("model", glm::mat4());
-    groundObj->defferedGeoShader->SetVector3f("color", glm::vec3(0.5, 0.5, 0.5));
-    groundObj->defferedShadingShader->Use()->SetInteger("gPosition", 0);
-    groundObj->defferedShadingShader->SetInteger("gNormal", 1);
-    groundObj->defferedShadingShader->SetInteger("gAlbedoSpec", 2);
-    this->scene->addRenderObject(groundObj, "ground");
 
     this->postShader = ResourceManager::LoadShader("shaders/screen_quad.vs", "shaders/water_postprocess.frag", nullptr, "water_postprocess");
     this->postShader->Use();

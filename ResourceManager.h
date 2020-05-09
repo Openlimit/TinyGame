@@ -5,6 +5,7 @@
 #include "Texture2D.h"
 #include "Shader.h"
 #include "Mesh.h"
+#include "Material.h"
 
 // A static singleton ResourceManager class that hosts several
 // functions to load Textures and Shaders. Each loaded texture
@@ -18,6 +19,7 @@ public:
     static std::map<std::string, Shader*>    Shaders;
     static std::map<std::string, Texture2D*> Textures;
     static std::map<std::string, Mesh*> Meshes;
+    static std::map<std::string, Material*> Materials;
 
     // Loads (and generates) a shader program from file loading vertex, fragment (and geometry) shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader
     static Shader* LoadShader(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile, std::string name);
@@ -31,6 +33,10 @@ public:
     static Mesh* LoadMesh(const GLchar* file, std::string name);
 
     static Mesh* GetMesh(std::string name);
+
+    static Material* LoadMaterial(Material::MaterialType type, std::string name);
+
+    static Material* GetMaterial(std::string name);
 
     // Properly de-allocates all loaded resources
     static void      Clear();

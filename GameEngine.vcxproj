@@ -141,63 +141,50 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BallObject.cpp" />
     <ClCompile Include="DeferredRenderer.cpp" />
     <ClCompile Include="ForwardRenderer.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameLevel.cpp" />
-    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="ParticleGenerator.cpp" />
     <ClCompile Include="PostProcessor.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="RPGGame.cpp" />
     <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="SpriteRenderer.cpp" />
+    <ClCompile Include="ShadowProcessor.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="WaterGame.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BallObject.h" />
+    <ClInclude Include="BBox.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DeferredRenderer.h" />
     <ClInclude Include="ForwardRenderer.h" />
     <ClInclude Include="FPSCamera.h" />
-    <ClInclude Include="Game.h" />
     <ClInclude Include="GameBase.h" />
-    <ClInclude Include="GameLevel.h" />
-    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="OpenGL_Common.h" />
-    <ClInclude Include="ParticleGenerator.h" />
     <ClInclude Include="PostProcessor.h" />
-    <ClInclude Include="PowerUp.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="RPGGame.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="SpriteRenderer.h" />
+    <ClInclude Include="ShadowProcessor.h" />
     <ClInclude Include="Texture2D.h" />
+    <ClInclude Include="Transform.h" />
     <ClInclude Include="WaterGame.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\diffuse.frag" />
+    <None Include="shaders\diffuse.vs" />
     <None Include="shaders\mesh_geo.frag" />
     <None Include="shaders\mesh_geo.vs" />
     <None Include="shaders\mesh_shading.frag" />
     <None Include="shaders\mesh.frag" />
     <None Include="shaders\mesh.vs" />
-    <None Include="shaders\particle.frag" />
-    <None Include="shaders\particle.vs" />
-    <None Include="shaders\post_processing.frag" />
-    <None Include="shaders\post_processing.vs" />
-    <None Include="shaders\sprite.frag" />
-    <None Include="shaders\sprite.vs" />
-    <None Include="shaders\sprite_batch.frag" />
-    <None Include="shaders\sprite_batch.vs" />
     <None Include="shaders\water.frag" />
     <None Include="shaders\water.vs" />
     <None Include="shaders\water_postprocess.frag" />

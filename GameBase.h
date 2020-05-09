@@ -16,13 +16,13 @@ public:
     float near_plane;
     float far_plane;
 
-    GameBase(GLuint width, GLuint height, Renderer::RENDER_TYPE type = Renderer::FORWARD) :Width(width), Height(height), near_plane(0.1), far_plane(100)
+    GameBase(GLuint width, GLuint height, Renderer::RendererType type = Renderer::RendererType::FORWARD) :Width(width), Height(height), near_plane(0.1), far_plane(100)
     {
-        if (type == Renderer::FORWARD)
+        if (type == Renderer::RendererType::FORWARD)
         {
             this->renderer = new ForwardRenderer();
         }
-        else if (type == Renderer::DEFFERED)
+        else if (type == Renderer::RendererType::DEFFERED)
         {
             this->renderer = new DeferredRenderer(Width, Height);
         }
@@ -65,7 +65,16 @@ public:
     {
         glm::mat4 view = this->camera->GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(this->camera->Zoom), (float)Width / (float)Height, near_plane, far_plane);
-        this->scene->update_VP(view, projection);
+
+        for (auto iter : ResourceManager::Shaders)
+        {
+            if (iter.second->auto_update_VP)
+            {
+                iter.second->Use();
+                iter.second->SetMatrix4("view", view);
+                iter.second->SetMatrix4("projection", projection);
+            }
+        }
 
         this->Update(dt);
     }

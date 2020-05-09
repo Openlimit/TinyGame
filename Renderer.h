@@ -7,7 +7,7 @@
 class Renderer
 {
 public:
-    enum RENDER_TYPE
+    enum class RendererType
     {
         FORWARD,
         DEFFERED
