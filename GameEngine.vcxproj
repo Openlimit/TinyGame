@@ -178,6 +178,7 @@
     <ClInclude Include="WaterGame.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\debug_depth_map.frag" />
     <None Include="shaders\diffuse.frag" />
     <None Include="shaders\diffuse.vs" />
     <None Include="shaders\mesh_geo.frag" />
@@ -185,6 +186,8 @@
     <None Include="shaders\mesh_shading.frag" />
     <None Include="shaders\mesh.frag" />
     <None Include="shaders\mesh.vs" />
+    <None Include="shaders\shadow_map.frag" />
+    <None Include="shaders\shadow_map.vs" />
     <None Include="shaders\water.frag" />
     <None Include="shaders\water.vs" />
     <None Include="shaders\water_postprocess.frag" />

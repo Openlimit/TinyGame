@@ -1,15 +1,23 @@
 #include "Renderer.h"
 
 Renderer::Renderer()
-{}
+{
+}
 
 Renderer::~Renderer()
 {
-    if (postProcessor != nullptr)
-        delete postProcessor;
+    if (this->postProcessor != nullptr)
+        delete this->postProcessor;
+    if (this->shadowProcessor != nullptr)
+        delete this->shadowProcessor;
 }
 
 void Renderer::addPostProcessor(Shader* shader, int width, int height)
 {
-    postProcessor = new PostProcessor(shader, width, height);
+    this->postProcessor = new PostProcessor(shader, width, height);
+}
+
+void Renderer::addShadowProcessor(int width, int height)
+{
+    this->shadowProcessor = new ShadowProcessor(width, height);
 }

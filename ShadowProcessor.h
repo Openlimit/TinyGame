@@ -9,6 +9,8 @@ public:
 	GLuint Width;
 	GLuint Height;
 	Texture2D* depthTexture;
+	Shader* shadowShader;
+	glm::mat4 lightSpaceMatrix;
 
 	ShadowProcessor(GLuint width, GLuint height);
 
@@ -16,7 +18,11 @@ public:
 
 	void render(Scene* scene);
 
+	void renderDepth();
+
 private:
 	GLuint FBO;
+	GLuint VAO, VBO;
+	Shader* shadowDebugShader;
 };
 

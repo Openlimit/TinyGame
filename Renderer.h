@@ -3,6 +3,7 @@
 
 #include "Scene.h"
 #include "PostProcessor.h"
+#include "ShadowProcessor.h"
 
 class Renderer
 {
@@ -21,7 +22,10 @@ public:
 
     void addPostProcessor(Shader* shader, int width, int height);
 
+    void addShadowProcessor(int width, int height);
+
 protected:
     PostProcessor* postProcessor;
+    ShadowProcessor* shadowProcessor;
 };
 

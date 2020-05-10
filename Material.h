@@ -21,6 +21,11 @@ public:
 
 	std::vector<Texture2D*> textures;
 
+	bool isReceiveShadow;
+	bool isCastShadow;
+
+	Material() :isReceiveShadow(false), isCastShadow(false) {}
+
 	//每帧调用，此时renderer已绑定shader
 	virtual void updateForwardShader() {}
 
@@ -35,6 +40,9 @@ class DiffuseMaterial:public Material
 public:
 	glm::vec3 diffuse_color;
 	Camera* camera;
+
+	DiffuseMaterial() :Material()
+	{}
 
 	void setupForwardShader(DirectionLight directionLight, Camera* _camera, glm::vec3 _diffuse_color)
 	{

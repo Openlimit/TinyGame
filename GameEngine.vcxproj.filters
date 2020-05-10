@@ -196,5 +196,14 @@
     <None Include="shaders\diffuse.frag">
       <Filter>资源文件\shaders\engine</Filter>
     </None>
+    <None Include="shaders\shadow_map.vs">
+      <Filter>资源文件\shaders\engine</Filter>
+    </None>
+    <None Include="shaders\shadow_map.frag">
+      <Filter>资源文件\shaders\engine</Filter>
+    </None>
+    <None Include="shaders\debug_depth_map.frag">
+      <Filter>资源文件\shaders\engine</Filter>
+    </None>
   </ItemGroup>
 </Project>
