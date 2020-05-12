@@ -9,6 +9,8 @@ public:
 
     ~DeferredRenderer();
 
+    void Init(Scene* scene) override;
+
     void Draw(Scene* scene) override;
 
 private:
@@ -19,8 +21,6 @@ private:
     GLuint G_Buffer;
 
     GLuint VAO, VBO;
-
-    GLuint Width, Height;
 
     // Initialize quad for rendering postprocessing texture
     void initRenderData();

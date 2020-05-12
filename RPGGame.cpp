@@ -14,17 +14,29 @@ RPGGame::~RPGGame()
 void RPGGame::Init()
 {
 	this->camera = new FPSCamera(glm::vec3(0, 1, 10), glm::vec3(0, 1, 0));
+
+	//Direction Light
 	this->scene->directionLight.direction = glm::normalize(glm::vec3(-1, -2, -1));
 	this->scene->directionLight.color = glm::vec3(1, 1, 1);
+
+	//Point Light
+	PointLight pointLight;
+	pointLight.position = glm::vec3(0, 5, 10);
+	pointLight.color = glm::vec3(1, 1, 1);
+	this->scene->pointLights.emplace_back(pointLight);
+
+	//Add Skybox
+	this->scene->addSkyBox();
 	
+	//Add Shadow
 	this->renderer->addShadowProcessor(this->Width, this->Height);
 
 	Mesh* ground = ResourceManager::LoadMesh("resources/models/plane.obj", "ground");
 	Material* groundMaterial = ResourceManager::LoadMaterial(Material::MaterialType::DIFFUSE, "ground");
-	groundMaterial->isCastShadow = true;
+	groundMaterial->isCastShadow = false;
 	groundMaterial->isReceiveShadow = true;
 	dynamic_cast<DiffuseMaterial*>(groundMaterial)->setupForwardShader(this->scene->directionLight, 
-		camera, glm::vec3(0.5, 0.5, 0.5));
+		pointLight, camera, glm::vec3(0.5, 0.5, 0.5));
 	this->scene->addRenderObject(ground, groundMaterial, Transform(glm::vec3(10)), "ground");
 
 	Mesh* cat = ResourceManager::LoadMesh("resources/models/cat.obj", "cat");
@@ -32,7 +44,7 @@ void RPGGame::Init()
 	catMaterial->isCastShadow = true;
 	catMaterial->isReceiveShadow = true;
 	dynamic_cast<DiffuseMaterial*>(catMaterial)->setupForwardShader(this->scene->directionLight, 
-		camera, glm::vec3(0.3, 0.5, 0.7));
+		pointLight, camera, glm::vec3(0.3, 0.5, 0.7));
 	this->scene->addRenderObject(cat, catMaterial, Transform(glm::vec3(0.01)), "cat");
 }
 

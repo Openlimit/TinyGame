@@ -1,7 +1,7 @@
 #include "DeferredRenderer.h"
 #include <iostream>
 
-DeferredRenderer::DeferredRenderer(GLuint width, GLuint height):Width(width),Height(height)
+DeferredRenderer::DeferredRenderer(GLuint width, GLuint height) :Renderer(width, height)
 {
 	glGenFramebuffers(1, &this->G_Buffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, this->G_Buffer);
@@ -89,6 +89,11 @@ void DeferredRenderer::initRenderData()
 	glBindVertexArray(0);
 }
 
+void DeferredRenderer::Init(Scene* scene)
+{
+
+}
+
 void DeferredRenderer::Draw(Scene *scene)
 {
 	//Geometric Pass
@@ -97,23 +102,28 @@ void DeferredRenderer::Draw(Scene *scene)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	for (auto iter: scene->renderObjects)
+	for (auto iter : scene->shaderObjectlist)
 	{
-		auto renderObject = iter.second;
-		renderObject->material->defferedGeoShader->Use();
-		glm::mat4 model = renderObject->transform.getTransform();
-		renderObject->material->defferedGeoShader->SetMatrix4("model", model);
-		renderObject->material->updateDefferedGeoShader();
-		for (int j = 0; j < renderObject->material->textures.size(); j++)
-		{
-			glActiveTexture(GL_TEXTURE0 + j);
-			renderObject->material->textures[j]->Bind();
-		}
+		auto shaderID = iter.first;
+		auto objectList = iter.second;
 
-		glBindVertexArray(renderObject->VAO);
-		//glDrawElements(GL_TRIANGLES, renderObject->mesh->indices.size(), GL_UNSIGNED_INT, 0);
-		glDrawArrays(GL_TRIANGLES, 0, renderObject->mesh->vertices.size());
-		glBindVertexArray(0);
+		glUseProgram(shaderID);
+		for (auto obj : objectList)
+		{
+			glm::mat4 model = obj->transform.getTransform();
+			obj->material->defferedGeoShader->SetMatrix4("model", model);
+			obj->material->updateDefferedGeoShader();
+			for (int j = 0; j < obj->material->textures.size(); j++)
+			{
+				glActiveTexture(GL_TEXTURE0 + j);
+				obj->material->textures[j]->Bind();
+			}
+
+			glBindVertexArray(obj->VAO);
+			//glDrawElements(GL_TRIANGLES, obj->mesh->indices.size(), GL_UNSIGNED_INT, 0);
+			glDrawArrays(GL_TRIANGLES, 0, obj->mesh->vertices.size());
+			glBindVertexArray(0);
+		}
 	}
 
 	//Shading Pass

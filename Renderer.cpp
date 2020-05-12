@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-Renderer::Renderer()
+Renderer::Renderer(GLuint width, GLuint height) :Width(width), Height(height)
 {
 }
 

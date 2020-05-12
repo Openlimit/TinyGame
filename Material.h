@@ -4,7 +4,7 @@
 
 #include "Camera.h"
 #include "Shader.h"
-#include "Texture2D.h"
+#include "Texture.h"
 #include "Light.h"
 
 class Material
@@ -12,14 +12,15 @@ class Material
 public:
 	enum class MaterialType
 	{
-		DIFFUSE
+		DIFFUSE,
+		SKYBOX
 	};
 
 	Shader* forwardShader;
 	Shader* defferedGeoShader;
 	Shader* defferedShadingShader;
 
-	std::vector<Texture2D*> textures;
+	std::vector<Texture*> textures;
 
 	bool isReceiveShadow;
 	bool isCastShadow;
@@ -44,7 +45,7 @@ public:
 	DiffuseMaterial() :Material()
 	{}
 
-	void setupForwardShader(DirectionLight directionLight, Camera* _camera, glm::vec3 _diffuse_color)
+	void setupForwardShader(DirectionLight directionLight, PointLight pointLight, Camera* _camera, glm::vec3 _diffuse_color)
 	{
 		this->camera = _camera;
 		this->diffuse_color = _diffuse_color;
@@ -52,6 +53,8 @@ public:
 		this->forwardShader->Use();
 		this->forwardShader->SetVector3f("directionLight.direction", directionLight.direction);
 		this->forwardShader->SetVector3f("directionLight.color", directionLight.color);
+		this->forwardShader->SetVector3f("pointLight.position", pointLight.position);
+		this->forwardShader->SetVector3f("pointLight.color", pointLight.color);
 	}
 
 	void updateForwardShader() override

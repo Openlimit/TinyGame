@@ -7,10 +7,10 @@
 #include <stb_image.h>
 
 // Instantiate static variables
-std::map<std::string, Texture2D*>    ResourceManager::Textures;
-std::map<std::string, Shader*>       ResourceManager::Shaders;
-std::map<std::string, Mesh*>         ResourceManager::Meshes;
-std::map<std::string, Material*>     ResourceManager::Materials;
+std::map<std::string, Texture*>       ResourceManager::Textures;
+std::map<std::string, Shader*>        ResourceManager::Shaders;
+std::map<std::string, Mesh*>          ResourceManager::Meshes;
+std::map<std::string, Material*>      ResourceManager::Materials;
 
 Shader* ResourceManager::LoadShader(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile, std::string name)
 {
@@ -26,13 +26,13 @@ Shader* ResourceManager::GetShader(std::string name)
         return nullptr;
 }
 
-Texture2D* ResourceManager::LoadTexture(const GLchar* file, GLboolean alpha, std::string name)
+Texture* ResourceManager::LoadTexture(const GLchar* file, GLboolean alpha, std::string name)
 {
     Textures[name] = loadTextureFromFile(file, alpha);
     return Textures[name];
 }
 
-Texture2D* ResourceManager::GetTexture(std::string name)
+Texture* ResourceManager::GetTexture(std::string name)
 {
     if (Textures.find(name) != Textures.end())
         return Textures[name];
@@ -123,6 +123,51 @@ Texture2D* ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean al
     return texture;
 }
 
+Texture* ResourceManager::LoadTextureCubeMap(const GLchar* files[6], std::string name)
+{
+    Textures[name] = loadTextureCubeMapFromFile(files);
+    return Textures[name];
+}
+
+Texture* ResourceManager::GetTextureCubeMap(std::string name)
+{
+    if (Textures.find(name) != Textures.end())
+        return Textures[name];
+    else
+        return nullptr;
+}
+
+TextureCubeMap* ResourceManager::loadTextureCubeMapFromFile(const GLchar* files[6])
+{
+    unsigned char* datas[6];
+    int width, height, nrChannels;
+    for (int i = 0; i < 6; i++)
+    {
+        datas[i] = stbi_load(files[i], &width, &height, &nrChannels, 0);
+        if (!datas[i])
+        {
+            std::cout << "Cubemap texture failed to load at path: " << files[i] << std::endl;
+            stbi_image_free(datas[i]);
+            exit(-1);
+        }
+        if (nrChannels != 3)
+        {
+            std::cout << "Cubemap texture nrChannels is not 3: " << files[i] << std::endl;
+            stbi_image_free(datas[i]);
+            exit(-1);
+        }
+    }
+
+    auto texture = new TextureCubeMap();
+    texture->Wrap_S = texture->Wrap_T = texture->Wrap_R = GL_CLAMP_TO_EDGE;
+    texture->Generate(width, height, datas);
+
+    for (int i = 0; i < 6; i++)
+        stbi_image_free(datas[i]);
+
+    return texture;
+}
+
 Mesh* ResourceManager::LoadMesh(const GLchar* file, std::string name)
 {
     std::ifstream in(file, std::ios::in);
@@ -139,13 +184,15 @@ Mesh* ResourceManager::LoadMesh(const GLchar* file, std::string name)
         std::getline(in, line);
         std::istringstream iss(line.c_str());
         char trash;
-        if (!line.compare(0, 2, "v ")) {
+        if (!line.compare(0, 2, "v ")) 
+        {
             iss >> trash;
             glm::vec3 vec;
             iss >> vec[0] >> vec[1] >> vec[2];
             vertices.emplace_back(vec);
         }
-        else if (!line.compare(0, 3, "vt ")) {
+        else if (!line.compare(0, 3, "vt ")) 
+        {
             iss >> trash >> trash;
             glm::vec3 vec;
             int i = 0;
@@ -158,13 +205,15 @@ Mesh* ResourceManager::LoadMesh(const GLchar* file, std::string name)
                 vec[2] = 0;
             text_coords.emplace_back(vec);
         }
-        else if (!line.compare(0, 3, "vn ")) {
+        else if (!line.compare(0, 3, "vn ")) 
+        {
             iss >> trash >> trash;
             glm::vec3 vec;
             iss >> vec[0] >> vec[1] >> vec[2];
             normals.emplace_back(vec);
         }
-        else if (!line.compare(0, 2, "f ")) {
+        else if (!line.compare(0, 2, "f ")) 
+        {
             if (count < 0)
             {
                 count = 0;
@@ -217,13 +266,42 @@ Material* ResourceManager::LoadMaterial(Material::MaterialType type, std::string
     switch (type)
     {
     case Material::MaterialType::DIFFUSE:
-        Shader *shader = GetShader("diffuse");
-        if (shader == nullptr)
-            shader = LoadShader("shaders/diffuse.vs", "shaders/diffuse.frag", nullptr, "diffuse");
-        shader->auto_update_VP = true;
-        auto material = new DiffuseMaterial();
-        material->forwardShader = shader;
-        Materials[name] = material;
+    {
+        auto diffuseShader = GetShader("diffuse");
+        if (diffuseShader == nullptr)
+            diffuseShader = LoadShader("shaders/diffuse.vs", "shaders/diffuse.frag", nullptr, "diffuse");
+        diffuseShader->auto_update_VP = true;
+        auto diffuseMaterial = new DiffuseMaterial();
+        diffuseMaterial->forwardShader = diffuseShader;
+        Materials[name] = diffuseMaterial;
+    }
+        break;
+    case Material::MaterialType::SKYBOX:
+    {
+        auto skyboxShader = GetShader("skybox");
+        if (skyboxShader == nullptr)
+            skyboxShader = ResourceManager::LoadShader("shaders/skybox.vs", "shaders/skybox.frag", nullptr, "skybox");
+        skyboxShader->auto_update_VP = true;
+
+        auto skyboxTexture = GetTextureCubeMap("skybox");
+        if (skyboxTexture == nullptr)
+        {
+            const char* skyBoxFiles[] = {
+            "resources/skybox/right.jpg",
+            "resources/skybox/left.jpg",
+            "resources/skybox/top.jpg",
+            "resources/skybox/bottom.jpg",
+            "resources/skybox/front.jpg",
+            "resources/skybox/back.jpg"
+            };
+            skyboxTexture = LoadTextureCubeMap(skyBoxFiles, "skybox");
+        }
+
+        auto skyboxMaterial = new Material();
+        skyboxMaterial->forwardShader = skyboxShader;
+        skyboxMaterial->textures.emplace_back(skyboxTexture);
+        Materials[name] = skyboxMaterial;
+    }
         break;
     }
 

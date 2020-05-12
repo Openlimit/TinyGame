@@ -5,9 +5,11 @@ class ForwardRenderer:public Renderer
 {
 public:
 
-    ForwardRenderer();
+    ForwardRenderer(GLuint width, GLuint height);
 
     ~ForwardRenderer();
+
+    void Init(Scene* scene) override;
 
     void Draw(Scene* scene) override;
 };

@@ -12,15 +12,17 @@ public:
     Camera* camera;
     Renderer* renderer;
     Scene *scene;
+    bool isFirstFrame;
 
     float near_plane;
     float far_plane;
 
-    GameBase(GLuint width, GLuint height, Renderer::RendererType type = Renderer::RendererType::FORWARD) :Width(width), Height(height), near_plane(0.1), far_plane(100)
+
+    GameBase(GLuint width, GLuint height, Renderer::RendererType type = Renderer::RendererType::FORWARD) :Width(width), Height(height), near_plane(0.1), far_plane(100), isFirstFrame(true)
     {
         if (type == Renderer::RendererType::FORWARD)
         {
-            this->renderer = new ForwardRenderer();
+            this->renderer = new ForwardRenderer(Width, Height);
         }
         else if (type == Renderer::RendererType::DEFFERED)
         {
@@ -40,6 +42,12 @@ public:
 
     void Render()
     {
+        if (isFirstFrame)
+        {
+            this->renderer->Init(this->scene);
+            isFirstFrame = false;
+        }
+
         this->renderer->Draw(this->scene);
     }
 

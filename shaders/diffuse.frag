@@ -10,20 +10,52 @@ struct DirectionLight {
 	vec3 color;
 };
 
-uniform sampler2D depthMap;
+struct PointLight{
+    vec3 position;
+	vec3 color;
+};
+
+uniform sampler2D directionShadowMap;
+uniform samplerCube pointShadowMap;
 
 uniform DirectionLight directionLight;
+uniform PointLight pointLight;
+
 uniform vec3 diffuse_color;
 uniform vec3 viewPos;
+uniform float far_plane;
 
-float ShadowCalculation(vec4 fragPosLightSpace)
+float PointShadowCalculation()
+{
+    vec3 fragToLight = FragPos - pointLight.position;  
+    float closestDepth = texture(pointShadowMap, fragToLight).r;
+    if(closestDepth < 1)
+    {
+        closestDepth *= far_plane;
+
+        float currentDepth = length(fragToLight);
+    
+        float bias = 0.05; 
+        float shadow = currentDepth -  bias > closestDepth ? 1.0 : 0.0;
+        return shadow;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+float DirectShadowCalculation(vec4 fragPosLightSpace)
 {
     
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
-    
-    float closestDepth = texture(depthMap, projCoords.xy).r; 
     float currentDepth = projCoords.z;
+    if(currentDepth > 1.0)
+        return 0.0;
+
+    float closestDepth = texture(directionShadowMap, projCoords.xy).r; 
+    
     float bias = max(0.05 * (1.0 - dot(Normal, -directionLight.direction)), 0.005);
     float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
 
@@ -34,7 +66,15 @@ vec3 CalcDirLight(DirectionLight light, vec3 normal, vec3 viewDir)
 {
     vec3 lightDir = normalize(-light.direction);
     float diff = max(dot(normal, lightDir), 0.0);
-    float shadow = ShadowCalculation(FragPosLightSpace);
+    float shadow = DirectShadowCalculation(FragPosLightSpace);
+    return ((1.0 - shadow) *light.color * diff +0.1)* diffuse_color;
+}
+
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 viewDir)
+{
+    vec3 lightDir = normalize(light.position - FragPos);
+    float diff = max(dot(normal, lightDir), 0.0);
+    float shadow = PointShadowCalculation();
     return ((1.0 - shadow) *light.color * diff +0.1)* diffuse_color;
 }
 
@@ -42,6 +82,7 @@ void main()
 {
 	vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 result = CalcDirLight(directionLight, norm, viewDir);
+    //vec3 result = CalcDirLight(directionLight, norm, viewDir);
+    vec3 result = CalcPointLight(pointLight, norm, viewDir);
     FragColor = vec4(result, 1.0);
 }

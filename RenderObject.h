@@ -4,6 +4,7 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "Transform.h"
+#include "BSphere.h"
 
 class RenderObject
 {
@@ -11,6 +12,7 @@ public:
 	Mesh* mesh;
     Transform transform;
     Material* material;
+    BSphere bounding;
     GLuint VAO;
 
 	RenderObject(Mesh* mesh, Material* material, Transform transform) :mesh(mesh), transform(transform), material(material)
@@ -39,6 +41,11 @@ private:
 
     void setup()
     {
+        bounding = BSphere::getBSphere(mesh);
+        glm::mat4 transMat = transform.getTransform();
+        bounding.center = glm::vec3(transMat * glm::vec4(bounding.center, 1.f));
+        bounding.radius *= std::fmax(std::fmax(transform.scale.x, transform.scale.y), transform.scale.z);
+
         // create buffers/arrays
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);

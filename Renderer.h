@@ -14,9 +14,11 @@ public:
         DEFFERED
     };
 
-    Renderer();
+    Renderer(GLuint width, GLuint height);
 
     virtual ~Renderer();
+
+    virtual void Init(Scene* scene) = 0;
 
     virtual void Draw(Scene *scene) = 0;
 
@@ -25,6 +27,7 @@ public:
     void addShadowProcessor(int width, int height);
 
 protected:
+    GLuint Width, Height;
     PostProcessor* postProcessor;
     ShadowProcessor* shadowProcessor;
 };

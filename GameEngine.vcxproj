@@ -152,10 +152,12 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShadowProcessor.cpp" />
     <ClCompile Include="Texture2D.cpp" />
+    <ClCompile Include="TextureCubeMap.cpp" />
     <ClCompile Include="WaterGame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BBox.h" />
+    <ClInclude Include="BSphere.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DeferredRenderer.h" />
     <ClInclude Include="ForwardRenderer.h" />
@@ -173,7 +175,9 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShadowProcessor.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Texture2D.h" />
+    <ClInclude Include="TextureCubeMap.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="WaterGame.h" />
   </ItemGroup>
@@ -186,8 +190,13 @@
     <None Include="shaders\mesh_shading.frag" />
     <None Include="shaders\mesh.frag" />
     <None Include="shaders\mesh.vs" />
+    <None Include="shaders\omni_shadow_map.frag" />
+    <None Include="shaders\omni_shadow_map.gs" />
+    <None Include="shaders\omni_shadow_map.vs" />
     <None Include="shaders\shadow_map.frag" />
     <None Include="shaders\shadow_map.vs" />
+    <None Include="shaders\skybox.frag" />
+    <None Include="shaders\skybox.vs" />
     <None Include="shaders\water.frag" />
     <None Include="shaders\water.vs" />
     <None Include="shaders\water_postprocess.frag" />

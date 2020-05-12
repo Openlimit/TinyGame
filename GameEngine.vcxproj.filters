@@ -58,6 +58,15 @@
     <Filter Include="头文件\Engine\Camera">
       <UniqueIdentifier>{12954284-d53b-4f0f-b4ac-55f81165da13}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Engine\BoundingVolume">
+      <UniqueIdentifier>{a3cf71d9-394c-46c4-aae0-f664d3df5e0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Engine\Texture">
+      <UniqueIdentifier>{84a3ed6f-f664-49a7-91ae-dff97380c127}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Engine\Texture">
+      <UniqueIdentifier>{c6a1f152-777c-42d2-b68e-8522191108f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -70,9 +79,6 @@
       <Filter>源文件\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
-      <Filter>源文件\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture2D.cpp">
       <Filter>源文件\Engine</Filter>
     </ClCompile>
     <ClCompile Include="WaterGame.cpp">
@@ -96,6 +102,12 @@
     <ClCompile Include="ShadowProcessor.cpp">
       <Filter>源文件\Engine\Render</Filter>
     </ClCompile>
+    <ClCompile Include="TextureCubeMap.cpp">
+      <Filter>源文件\Engine\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>源文件\Engine\Texture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WaterGame.h">
@@ -105,9 +117,6 @@
       <Filter>头文件\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
-      <Filter>头文件\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture2D.h">
       <Filter>头文件\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
@@ -159,7 +168,19 @@
       <Filter>头文件\Engine\Render</Filter>
     </ClInclude>
     <ClInclude Include="BBox.h">
-      <Filter>头文件\Engine</Filter>
+      <Filter>头文件\Engine\BoundingVolume</Filter>
+    </ClInclude>
+    <ClInclude Include="BSphere.h">
+      <Filter>头文件\Engine\BoundingVolume</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.h">
+      <Filter>头文件\Engine\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureCubeMap.h">
+      <Filter>头文件\Engine\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>头文件\Engine\Texture</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +224,21 @@
       <Filter>资源文件\shaders\engine</Filter>
     </None>
     <None Include="shaders\debug_depth_map.frag">
+      <Filter>资源文件\shaders\engine</Filter>
+    </None>
+    <None Include="shaders\omni_shadow_map.vs">
+      <Filter>资源文件\shaders\engine</Filter>
+    </None>
+    <None Include="shaders\omni_shadow_map.frag">
+      <Filter>资源文件\shaders\engine</Filter>
+    </None>
+    <None Include="shaders\omni_shadow_map.gs">
+      <Filter>资源文件\shaders\engine</Filter>
+    </None>
+    <None Include="shaders\skybox.vs">
+      <Filter>资源文件\shaders\engine</Filter>
+    </None>
+    <None Include="shaders\skybox.frag">
       <Filter>资源文件\shaders\engine</Filter>
     </None>
   </ItemGroup>

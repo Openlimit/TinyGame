@@ -3,66 +3,102 @@
 
 #include "ResourceManager.h"
 
+BSphere GetCastShadowBounding(Scene* scene)
+{
+    BSphere bounding;
+    bounding.radius = 0;
+    for (auto iter : scene->renderObjects)
+    {
+        auto obj = iter.second;
+        if (obj->material->isCastShadow)
+        {
+            if (bounding.radius > 0)
+            {
+                bounding = BSphere::merge(bounding, obj->bounding);
+            }
+            else
+            {
+                bounding = obj->bounding;
+            }
+        }
+    }
+    return bounding;
+}
+
 ShadowProcessor::ShadowProcessor(GLuint width, GLuint height):Width(width),Height(height)
 {
-    // Initializeframebuffer object
-    glGenFramebuffers(1, &this->FBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, this->FBO);
+    // Initialize Direction Light FrameBuffer
+    glGenFramebuffers(1, &directionLightFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, directionLightFBO);
 
-    this->depthTexture = new Texture2D();
-    this->depthTexture->Image_Format = this->depthTexture->Internal_Format = GL_DEPTH_COMPONENT;
-    this->depthTexture->Filter_Min = this->depthTexture->Filter_Max = GL_NEAREST;
-    this->depthTexture->GenerateFloat(width, height, NULL);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->depthTexture->ID, 0);
-
+    directionDepthTexture = new Texture2D();
+    directionDepthTexture->Image_Format = directionDepthTexture->Internal_Format = GL_DEPTH_COMPONENT;
+    directionDepthTexture->Filter_Min = directionDepthTexture->Filter_Max = GL_NEAREST;
+    directionDepthTexture->Wrap_S = directionDepthTexture->Wrap_T = GL_CLAMP_TO_BORDER;
+    GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+    directionDepthTexture->GenerateFloat(width, height, borderColor, nullptr);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, directionDepthTexture->ID, 0);
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
-
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::ShadowProcessor: Failed to initialize FBO" << std::endl;
-    
+        std::cout << "ERROR::ShadowProcessor: Failed to initialize directionLightFBO" << std::endl;
+
+    // Initialize Point Light FrameBuffer
+    glGenFramebuffers(1, &pointLightFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, pointLightFBO);
+
+    auto pointDepthTexture = new TextureCubeMap();
+    pointDepthTexture->Image_Format = pointDepthTexture->Internal_Format = GL_DEPTH_COMPONENT;
+    pointDepthTexture->Filter_Min = pointDepthTexture->Filter_Max = GL_NEAREST;
+    pointDepthTexture->Wrap_S = pointDepthTexture->Wrap_T = pointDepthTexture->Wrap_R = GL_CLAMP_TO_EDGE;
+    float* data[6] = { nullptr };
+    pointDepthTexture->GenerateFloat(height, height, data);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, pointDepthTexture->ID, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::ShadowProcessor: Failed to initialize pointLightFBO " << std::endl;
+    pointDepthTextures.emplace_back(pointDepthTexture);
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    this->shadowShader = ResourceManager::LoadShader("shaders/shadow_map.vs", "shaders/shadow_map.frag", nullptr, "shadow_map");
+    directionLightShadowShader = ResourceManager::LoadShader("shaders/shadow_map.vs", "shaders/shadow_map.frag", nullptr, "shadow_map");
+    pointLightShadowShader = ResourceManager::LoadShader("shaders/omni_shadow_map.vs", "shaders/omni_shadow_map.frag", "shaders/omni_shadow_map.gs", "omni_shadow_map");
 }
 
 ShadowProcessor::~ShadowProcessor()
 {
-    glDeleteFramebuffers(1, &this->FBO);
-    if (this->depthTexture != nullptr)
-        delete this->depthTexture;
+    glDeleteFramebuffers(1, &directionLightFBO);
+    glDeleteFramebuffers(1, &pointLightFBO);
+    if (directionDepthTexture != nullptr)
+        delete directionDepthTexture;
+    for (auto texture : pointDepthTextures)
+    {
+        if (texture != nullptr)
+            delete texture;
+    }
 }
 
-void ShadowProcessor::render(Scene *scene)
+void ShadowProcessor::renderDirectionLight(Scene *scene)
 {
     auto view = glm::mat3(glm::lookAt(glm::vec3(0), scene->directionLight.direction, glm::vec3(0, 1, 0)));
-    auto bPositions = scene->sceneBox.getBPosition();
-    glm::vec3 min_pos(INT_MAX);
-    glm::vec3 max_pos(INT_MIN);
-    for (auto pos : bPositions)
-    {
-        pos = view * pos;
-        min_pos = glm::min(min_pos, pos);
-        max_pos = glm::max(max_pos, pos);
-    }
+    BSphere bounding = GetCastShadowBounding(scene);
+    bounding.center = view * bounding.center;
 
     //OpenGL进行view变换后，相机是朝向z轴负方向,所以要使用max_pos的z值
-    glm::vec3 lightPos((min_pos.x + max_pos.x) / 2, (min_pos.y + max_pos.y) / 2, max_pos.z + 0.1);
+    glm::vec3 lightPos(bounding.center.x, bounding.center.y, bounding.center.z + bounding.radius + 0.1f);
     lightPos = glm::transpose(view) * lightPos;
     auto lightView = glm::lookAt(lightPos, lightPos + scene->directionLight.direction, glm::vec3(0, 1, 0));
 
-    float half_width = (max_pos.x - min_pos.x) / 2;
-    float half_height = (max_pos.y - min_pos.y) / 2;
-    float depth = max_pos.z - min_pos.z + 0.1;
-    auto projection = glm::ortho(-half_width, half_width, -half_height, half_height, 0.f, depth);
-    this->lightSpaceMatrix = projection * lightView;
+    auto projection = glm::ortho(-bounding.radius, bounding.radius, -bounding.radius, bounding.radius, 0.f, bounding.radius * 2 + 0.1f);
+    directionLightSpaceMatrix = projection * lightView;
 
-    glViewport(0, 0, this->Width, this->Height);
-    glBindFramebuffer(GL_FRAMEBUFFER, this->FBO);
+    glViewport(0, 0, Width, Height);
+    glBindFramebuffer(GL_FRAMEBUFFER, directionLightFBO);
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    this->shadowShader->Use();
-    this->shadowShader->SetMatrix4("lightSpaceMatrix", this->lightSpaceMatrix);
+    directionLightShadowShader->Use();
+    directionLightShadowShader->SetMatrix4("lightSpaceMatrix", directionLightSpaceMatrix);
     for (auto iter : scene->renderObjects)
     {
         auto renderObject = iter.second;
@@ -70,13 +106,93 @@ void ShadowProcessor::render(Scene *scene)
             continue;
 
         glm::mat4 model = renderObject->transform.getTransform();
-        this->shadowShader->SetMatrix4("model", model);
+        directionLightShadowShader->SetMatrix4("model", model);
 
         glBindVertexArray(renderObject->VAO);
         glDrawArrays(GL_TRIANGLES, 0, renderObject->mesh->vertices.size());
         glBindVertexArray(0);
     }
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void ShadowProcessor::renderPointLight(Scene* scene)
+{
+    if (scene->pointLights.size() == 0)
+        return;
+
+    BSphere bounding = GetCastShadowBounding(scene);
+
+    glViewport(0, 0, Height, Height);
+    glBindFramebuffer(GL_FRAMEBUFFER, pointLightFBO);
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    while (scene->pointLights.size() > pointDepthTextures.size())
+    {
+        auto pointDepthTexture = new TextureCubeMap();
+        pointDepthTexture->Image_Format = pointDepthTexture->Internal_Format = GL_DEPTH_COMPONENT;
+        pointDepthTexture->Filter_Min = pointDepthTexture->Filter_Max = GL_NEAREST;
+        pointDepthTexture->Wrap_S = pointDepthTexture->Wrap_T = pointDepthTexture->Wrap_R = GL_CLAMP_TO_EDGE;
+        float* data[6] = { nullptr };
+        pointDepthTexture->GenerateFloat(Height, Height, data);
+        pointDepthTextures.emplace_back(pointDepthTexture);
+    }
+
+    far_planes.resize(pointDepthTextures.size());
+
+    pointLightShadowShader->Use();
+    for (int i = 0; i < scene->pointLights.size(); i++)
+    {
+        auto pointLight = scene->pointLights[i];
+        GLfloat far = 0;
+        for (int j = 0; j < 3; j++)
+        {
+            far = std::fmax(far, std::fabs(bounding.center[j] + bounding.radius - pointLight.position[j]));
+            far = std::fmax(far, std::fabs(bounding.center[j] - bounding.radius - pointLight.position[j]));
+        }
+        far_planes[i] = far;
+
+        GLfloat aspect = 1.f;
+        GLfloat near = 1.f;
+        glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
+
+        std::vector<glm::mat4> shadowTransforms;
+        shadowTransforms.emplace_back(shadowProj *
+            glm::lookAt(pointLight.position, pointLight.position + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+        shadowTransforms.emplace_back(shadowProj *
+            glm::lookAt(pointLight.position, pointLight.position + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+        shadowTransforms.emplace_back(shadowProj *
+            glm::lookAt(pointLight.position, pointLight.position + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
+        shadowTransforms.emplace_back(shadowProj *
+            glm::lookAt(pointLight.position, pointLight.position + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+        shadowTransforms.emplace_back(shadowProj *
+            glm::lookAt(pointLight.position, pointLight.position + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+        shadowTransforms.emplace_back(shadowProj *
+            glm::lookAt(pointLight.position, pointLight.position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+
+        for (GLuint j = 0; j < 6; ++j)
+            pointLightShadowShader->SetMatrix4(("shadowMatrices[" + std::to_string(j) + "]").c_str(), shadowTransforms[j]);
+
+        pointLightShadowShader->SetFloat("far_plane", far);
+        pointLightShadowShader->SetVector3f("lightPos", pointLight.position);
+
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, pointDepthTextures[i]->ID, 0);
+
+        for (auto iter : scene->renderObjects)
+        {
+            auto renderObject = iter.second;
+            if (!renderObject->material->isCastShadow)
+                continue;
+
+            glm::mat4 model = renderObject->transform.getTransform();
+            pointLightShadowShader->SetMatrix4("model", model);
+
+            glBindVertexArray(renderObject->VAO);
+            glDrawArrays(GL_TRIANGLES, 0, renderObject->mesh->vertices.size());
+            glBindVertexArray(0);
+        }
+    }
+    
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -119,7 +235,7 @@ void ShadowProcessor::renderDepth()
 
     // Render textured quad
     glActiveTexture(GL_TEXTURE0);
-    this->depthTexture->Bind();
+    directionDepthTexture->Bind();
 
     glBindVertexArray(this->VAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
