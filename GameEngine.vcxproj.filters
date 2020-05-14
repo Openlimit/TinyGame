@@ -241,5 +241,11 @@
     <None Include="shaders\skybox.frag">
       <Filter>资源文件\shaders\engine</Filter>
     </None>
+    <None Include="shaders\pbr.vs">
+      <Filter>资源文件\shaders\engine</Filter>
+    </None>
+    <None Include="shaders\pbr.frag">
+      <Filter>资源文件\shaders\engine</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -11,7 +11,8 @@ void ForwardRenderer::Init(Scene* scene)
     if (this->shadowProcessor != nullptr)
     {
         this->shadowProcessor->renderDirectionLight(scene);
-        this->shadowProcessor->renderPointLight(scene);
+        if (this->enablePointLightShadow)
+            this->shadowProcessor->renderPointLight(scene);
     }
 }
 
@@ -49,7 +50,7 @@ void ForwardRenderer::Draw(Scene* scene)
                 obj->material->forwardShader->SetInteger("directionShadowMap", texture_id);
                 obj->material->forwardShader->SetMatrix4("lightSpaceMatrix", this->shadowProcessor->directionLightSpaceMatrix);
                 
-                if (scene->pointLights.size() > 0)
+                if (this->enablePointLightShadow && scene->pointLights.size() > 0)
                 {
                     glActiveTexture(GL_TEXTURE0 + texture_id + 1);
                     this->shadowProcessor->pointDepthTextures[0]->Bind();

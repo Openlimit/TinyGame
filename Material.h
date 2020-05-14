@@ -13,7 +13,8 @@ public:
 	enum class MaterialType
 	{
 		DIFFUSE,
-		SKYBOX
+		SKYBOX,
+		PBR
 	};
 
 	Shader* forwardShader;
@@ -61,5 +62,44 @@ public:
 	{
 		this->forwardShader->SetVector3f("diffuse_color", diffuse_color);
 		this->forwardShader->SetVector3f("viewPos", camera->Position);
+	}
+};
+
+class PBRMaterial :public Material
+{
+public:
+	glm::vec3 albedo;
+	float metallic;
+	float roughness;
+	float ao;
+	Camera* camera;
+
+	PBRMaterial() :Material()
+	{}
+
+	void setupForwardShader(std::vector<PointLight> &pointLights, Camera* _camera, 
+		glm::vec3 _albedo, float _metallic, float _roughness, float _ao)
+	{
+		this->camera = _camera;
+		this->metallic = _metallic;
+		this->albedo = _albedo;
+		this->roughness = _roughness;
+		this->ao = _ao;
+
+		this->forwardShader->Use();
+		for (int i = 0; i < pointLights.size(); i++)
+		{
+			this->forwardShader->SetVector3f(("lightPositions[" + std::to_string(i) + "]").c_str(), pointLights[i].position);
+			this->forwardShader->SetVector3f(("lightColors[" + std::to_string(i) + "]").c_str(), pointLights[i].color);
+		}
+	}
+
+	void updateForwardShader() override
+	{
+		this->forwardShader->SetVector3f("albedo", albedo);
+		this->forwardShader->SetFloat("metallic", metallic);
+		this->forwardShader->SetFloat("roughness", roughness);
+		this->forwardShader->SetFloat("ao", ao);
+		this->forwardShader->SetVector3f("camPos", camera->Position);
 	}
 };

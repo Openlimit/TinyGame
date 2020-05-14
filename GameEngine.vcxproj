@@ -193,6 +193,8 @@
     <None Include="shaders\omni_shadow_map.frag" />
     <None Include="shaders\omni_shadow_map.gs" />
     <None Include="shaders\omni_shadow_map.vs" />
+    <None Include="shaders\pbr.frag" />
+    <None Include="shaders\pbr.vs" />
     <None Include="shaders\shadow_map.frag" />
     <None Include="shaders\shadow_map.vs" />
     <None Include="shaders\skybox.frag" />

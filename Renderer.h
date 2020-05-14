@@ -26,6 +26,8 @@ public:
 
     void addShadowProcessor(int width, int height);
 
+    bool enablePointLightShadow;
+
 protected:
     GLuint Width, Height;
     PostProcessor* postProcessor;

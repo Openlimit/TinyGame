@@ -83,6 +83,7 @@ int main(int argc, char* argv[])
 
     // Delete all resources as loaded using the resource manager
     ResourceManager::Clear();
+    delete game;
 
     glfwTerminate();
     return 0;

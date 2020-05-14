@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-Renderer::Renderer(GLuint width, GLuint height) :Width(width), Height(height)
+Renderer::Renderer(GLuint width, GLuint height) :Width(width), Height(height), enablePointLightShadow(true)
 {
 }
 

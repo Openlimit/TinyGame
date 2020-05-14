@@ -275,7 +275,7 @@ Material* ResourceManager::LoadMaterial(Material::MaterialType type, std::string
         diffuseMaterial->forwardShader = diffuseShader;
         Materials[name] = diffuseMaterial;
     }
-        break;
+    break;
     case Material::MaterialType::SKYBOX:
     {
         auto skyboxShader = GetShader("skybox");
@@ -302,7 +302,18 @@ Material* ResourceManager::LoadMaterial(Material::MaterialType type, std::string
         skyboxMaterial->textures.emplace_back(skyboxTexture);
         Materials[name] = skyboxMaterial;
     }
-        break;
+    break;
+    case Material::MaterialType::PBR:
+    {
+        auto pbrShader = GetShader("pbr");
+        if (pbrShader == nullptr)
+            pbrShader = ResourceManager::LoadShader("shaders/pbr.vs", "shaders/pbr.frag", nullptr, "pbr");
+        pbrShader->auto_update_VP = true;
+        auto pbrMaterial = new PBRMaterial();
+        pbrMaterial->forwardShader = pbrShader;
+        Materials[name] = pbrMaterial;
+    }
+    break;
     }
 
     return Materials[name];
