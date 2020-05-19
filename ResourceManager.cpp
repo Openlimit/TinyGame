@@ -271,6 +271,7 @@ Material* ResourceManager::LoadMaterial(Material::MaterialType type, std::string
         if (diffuseShader == nullptr)
             diffuseShader = LoadShader("shaders/diffuse.vs", "shaders/diffuse.frag", nullptr, "diffuse");
         diffuseShader->auto_update_VP = true;
+        diffuseShader->auto_update_CameraPos = true;
         auto diffuseMaterial = new DiffuseMaterial();
         diffuseMaterial->forwardShader = diffuseShader;
         Materials[name] = diffuseMaterial;
@@ -309,6 +310,7 @@ Material* ResourceManager::LoadMaterial(Material::MaterialType type, std::string
         if (pbrShader == nullptr)
             pbrShader = ResourceManager::LoadShader("shaders/pbr.vs", "shaders/pbr.frag", nullptr, "pbr");
         pbrShader->auto_update_VP = true;
+        pbrShader->auto_update_CameraPos = true;
         auto pbrMaterial = new PBRMaterial();
         pbrMaterial->forwardShader = pbrShader;
         Materials[name] = pbrMaterial;
@@ -325,4 +327,11 @@ Material* ResourceManager::GetMaterial(std::string name)
         return Materials[name];
     else
         return nullptr;
+}
+
+void ResourceManager::ReplaceMaterial(std::string name, Material* material)
+{
+    if (Materials.find(name) != Materials.end())
+        delete Materials[name];
+    Materials[name] = material;
 }

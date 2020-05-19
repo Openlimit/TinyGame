@@ -12,10 +12,9 @@ public:
     Camera* camera;
     Renderer* renderer;
     Scene *scene;
-    bool isFirstFrame;
 
 
-    GameBase(GLuint width, GLuint height, Renderer::RendererType type = Renderer::RendererType::FORWARD) :Width(width), Height(height), isFirstFrame(true)
+    GameBase(GLuint width, GLuint height, Renderer::RendererType type = Renderer::RendererType::FORWARD) :Width(width), Height(height)
     {
         if (type == Renderer::RendererType::FORWARD)
         {
@@ -37,14 +36,32 @@ public:
             delete this->scene;
     }
 
+    void GameInit()
+    {
+        this->Init();
+
+        this->renderer->Init(this->scene, camera);
+
+        for (auto iter : ResourceManager::Materials)
+        {
+            auto material = iter.second;
+            switch (material->type)
+            {
+            case Material::MaterialType::DIFFUSE:
+                dynamic_cast<DiffuseMaterial*>(material)->setupForwardShader(scene->directionLight, scene->pointLights[0]);
+                break;
+            case Material::MaterialType::PBR:
+                dynamic_cast<PBRMaterial*>(material)->setupForwardShader(scene->pointLights);
+                break;
+            default:
+                break;
+            }
+        }
+        
+    }
+
     void Render()
     {
-        if (isFirstFrame)
-        {
-            this->renderer->Init(this->scene, camera);
-            isFirstFrame = false;
-        }
-
         this->renderer->Draw(this->scene, camera);
     }
 
@@ -79,14 +96,18 @@ public:
                 iter.second->SetMatrix4("view", view);
                 iter.second->SetMatrix4("projection", projection);
             }
+            if (iter.second->auto_update_CameraPos)
+            {
+                iter.second->Use();
+                iter.second->SetVector3f("cameraPos", camera->Position);
+            }
         }
 
         this->Update(dt);
     }
 
-    virtual void Init() = 0;
-
 protected:
+    virtual void Init() = 0;
     virtual void Update(GLfloat dt) = 0;
 
     virtual void ProcessInput(GLfloat dt) = 0;

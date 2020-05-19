@@ -22,8 +22,9 @@ uniform DirectionLight directionLight;
 uniform PointLight pointLight;
 
 uniform vec3 diffuse_color;
-uniform vec3 viewPos;
+uniform vec3 cameraPos;
 uniform float far_plane;
+uniform float receiveShadow;
 
 float PointShadowCalculation()
 {
@@ -66,7 +67,10 @@ vec3 CalcDirLight(DirectionLight light, vec3 normal, vec3 viewDir)
 {
     vec3 lightDir = normalize(-light.direction);
     float diff = max(dot(normal, lightDir), 0.0);
-    float shadow = DirectShadowCalculation(FragPosLightSpace);
+    float shadow=0;
+    if(receiveShadow>0)
+        shadow = DirectShadowCalculation(FragPosLightSpace);
+
     return ((1.0 - shadow) *light.color * diff +0.1)* diffuse_color;
 }
 
@@ -74,14 +78,17 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 viewDir)
 {
     vec3 lightDir = normalize(light.position - FragPos);
     float diff = max(dot(normal, lightDir), 0.0);
-    float shadow = PointShadowCalculation();
+    float shadow=0;
+    if(receiveShadow>0)
+        shadow= PointShadowCalculation();
+
     return ((1.0 - shadow) *light.color * diff +0.1)* diffuse_color;
 }
 
 void main()
 {
 	vec3 norm = normalize(Normal);
-    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 viewDir = normalize(cameraPos - FragPos);
     vec3 result = CalcDirLight(directionLight, norm, viewDir);
     //vec3 result = CalcPointLight(pointLight, norm, viewDir);
     FragColor = vec4(result, 1.0);

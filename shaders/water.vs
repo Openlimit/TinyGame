@@ -1,8 +1,8 @@
 #version 330 core
 layout (location = 0) in vec3 vertex;
 
-out vec3 normal;
-out vec3 frag_pos;
+out vec3 FragPos;
+out vec3 Normal;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -56,12 +56,11 @@ void main()
 
     float dx = DerivativeX(point);
     float dz = DerivativeZ(point);
-    normal.x = -dx;
-    normal.y = 1;
-    normal.z = -dz;
-    normal = normalize(normal);
-    mat3 normalMatrix = transpose(inverse(mat3(model)));
-    normal = normalMatrix * normal;
+    Normal.x = -dx;
+    Normal.y = 1;
+    Normal.z = -dz;
+    Normal = normalize(Normal);
+    Normal = transpose(inverse(mat3(model))) * Normal;
 
-    frag_pos = world_vert.xyz;
+    FragPos = world_vert.xyz;
 }

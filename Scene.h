@@ -67,6 +67,15 @@ public:
 		skyBox = new RenderObject(mesh, material);
 	}
 
+	void addMaterial(std::string name, Material* material)
+	{
+		auto obj = renderObjects[name];
+		if (obj == nullptr || obj->material != nullptr)
+			return;
+		obj->material = material;
+		updateShaderObjectlist(obj);
+	}
+
 private:
 	void updateShaderObjectlist(RenderObject* obj);
 };

@@ -13,9 +13,10 @@ public:
     // State
     GLuint ID;
     bool auto_update_VP;
+    bool auto_update_CameraPos;
 
     // Constructor
-    Shader():auto_update_VP(false) { }
+    Shader():auto_update_VP(false), auto_update_CameraPos(false){ }
 
     ~Shader()
     {

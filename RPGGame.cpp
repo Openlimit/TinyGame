@@ -22,22 +22,10 @@ void RPGGame::Init()
 
 	//Add Skybox
 	scene->addSkyBox();
-	
-    renderer->enablePointLightShadow = false;
 
 	//Add Shadow
 	renderer->addShadowProcessor(this->Width, this->Height);
-
-	Material* groundMaterial = ResourceManager::GetMaterial("ground");
-	dynamic_cast<DiffuseMaterial*>(groundMaterial)->setupForwardShader(scene->directionLight, 
-		scene->pointLights[0], camera, glm::vec3(0.5, 0.5, 0.5));
-
-    float metallic = 0.2;
-    float roughness = 0.2;
-    float ao = 1;
-    Material* sphereMaterial = ResourceManager::GetMaterial("sphere");
-    dynamic_cast<PBRMaterial*>(sphereMaterial)->setupForwardShader(scene->pointLights, camera,
-        glm::vec3(0.5, 0, 0), metallic, roughness, ao);
+    renderer->enablePointLightShadow = false;
 
     player = new GameObject(scene->renderObjects["sphere"]);
     player->move_speed = 10;

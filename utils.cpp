@@ -87,3 +87,63 @@ void generateSphere()
     }
     out.close();
 }
+
+void createGrid(glm::vec2 topLeft, glm::vec2 downRight, float H, int width, int height,
+    std::vector<glm::vec3>& vertices, std::vector<GLuint>& indices)
+{
+    int point_width = width + 1;
+    int point_height = height + 1;
+    vertices.resize(point_width * point_height);
+    for (int y = 0; y <= height; ++y)
+    {
+        for (int x = 0; x <= width; ++x)
+        {
+            float u = (float)x / (float)width;
+            float v = (float)y / (float)height;
+            glm::vec2 point = glm::vec2(1 - u, 1 - v) * topLeft + glm::vec2(u, v) * downRight;
+            vertices[y * point_width + x] = glm::vec3(point.x, H, point.y);
+        }
+    }
+
+    bool oddRow = false;
+    for (int y = 0; y < height; ++y)
+    {
+        if (!oddRow) // even rows
+        {
+            for (int x = 1; x <= width; ++x)
+            {
+                int n0 = y * point_width + x - 1;
+                int n1 = (y + 1) * point_width + x - 1;
+                int n2 = y * point_width + x;
+                int n3 = (y + 1) * point_width + x;
+
+                indices.emplace_back(n0);
+                indices.emplace_back(n1);
+                indices.emplace_back(n2);
+
+                indices.emplace_back(n2);
+                indices.emplace_back(n1);
+                indices.emplace_back(n3);
+            }
+        }
+        else
+        {
+            for (int x = width - 1; x >= 0; --x)
+            {
+                int n0 = (y + 1) * point_width + x + 1;
+                int n1 = y * point_width + x + 1;
+                int n2 = (y + 1) * point_width + x;
+                int n3 = y * point_width + x;
+
+                indices.emplace_back(n0);
+                indices.emplace_back(n1);
+                indices.emplace_back(n2);
+
+                indices.emplace_back(n2);
+                indices.emplace_back(n1);
+                indices.emplace_back(n3);
+            }
+        }
+        oddRow = !oddRow;
+    }
+}

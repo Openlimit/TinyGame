@@ -6,6 +6,9 @@
 
 void Scene::updateShaderObjectlist(RenderObject* obj)
 {
+    if (obj->material == nullptr)
+        return;
+
     GLuint shaderID;
     if (obj->material->forwardShader != nullptr)
         shaderID = obj->material->forwardShader->ID;
@@ -55,37 +58,71 @@ void Scene::load(std::string path)
             mesh = ResourceManager::LoadMesh(meshObj["path"].GetString(), meshObj["name"].GetString());
 
         //material
-        rapidjson::Value& materialObj = object["material"];
-        std::cout << "materialName: " << materialObj["name"].GetString() << std::endl;
-        std::string type(materialObj["type"].GetString());
-        Material::MaterialType mtype;
-        if (type == "DIFFUSE")
-            mtype = Material::MaterialType::DIFFUSE;
-        else if (type == "PBR")
-            mtype = Material::MaterialType::PBR;
-        else if (type == "CUSTOM")
-            mtype = Material::MaterialType::CUSTOM;
-        else
+        Material* material = nullptr;
+        if (object.HasMember("material"))
         {
-            std::cout << "MaterialType not exist: " << type << std::endl;
-            exit(-1);
-        }
-        
-        Material* material;
-        if (mtype == Material::MaterialType::CUSTOM)
-        {
-            material = new Material();
-            ResourceManager::Materials[materialObj["name"].GetString()] = material;
-        }
-        else
-        {
+            rapidjson::Value& materialObj = object["material"];
+            std::cout << "materialName: " << materialObj["name"].GetString() << std::endl;
+            std::string type(materialObj["type"].GetString());
+            Material::MaterialType mtype;
+            if (type == "DIFFUSE")
+                mtype = Material::MaterialType::DIFFUSE;
+            else if (type == "PBR")
+                mtype = Material::MaterialType::PBR;
+            else
+            {
+                std::cout << "MaterialType not exist: " << type << std::endl;
+                exit(-1);
+            }
+
             material = ResourceManager::LoadMaterial(mtype, materialObj["name"].GetString());
+            if (materialObj.HasMember("parameters"))
+            {
+                rapidjson::Value& parameters = materialObj["parameters"];
+                switch (mtype)
+                {
+                case Material::MaterialType::DIFFUSE:
+                {
+                    if (!parameters.HasMember("diffuse_color"))
+                    {
+                        std::cout << "DIFFUSE diffuse_color not exist: " << materialObj["name"].GetString() << std::endl;
+                        exit(-1);
+                    }
+                    auto diffuse = dynamic_cast<DiffuseMaterial*>(material);
+                    rapidjson::Value& diffuse_color = parameters["diffuse_color"];
+                    diffuse->diffuse_color = glm::vec3(diffuse_color[0].GetFloat(),
+                        diffuse_color[1].GetFloat(),
+                        diffuse_color[2].GetFloat());
+                }
+                break;
+                case Material::MaterialType::PBR:
+                {
+                    if (!parameters.HasMember("albedo") || !parameters.HasMember("metallic") ||
+                        !parameters.HasMember("roughness") || !parameters.HasMember("ao"))
+                    {
+                        std::cout << "PBR parameters not complete: " << materialObj["name"].GetString() << std::endl;
+                        exit(-1);
+                    }
+                    auto pbr = dynamic_cast<PBRMaterial*>(material);
+                    rapidjson::Value& albedo = parameters["albedo"];
+                    pbr->albedo = glm::vec3(albedo[0].GetFloat(),
+                        albedo[1].GetFloat(),
+                        albedo[2].GetFloat());
+                    pbr->metallic = parameters["metallic"].GetFloat();
+                    pbr->roughness = parameters["roughness"].GetFloat();
+                    pbr->ao = parameters["ao"].GetFloat();
+                }
+                break;
+                default:
+                    break;
+                }
+            }
+
+            if (materialObj.HasMember("isCastShadow"))
+                material->isCastShadow = materialObj["isCastShadow"].GetBool();
+            if (materialObj.HasMember("isReceiveShadow"))
+                material->isReceiveShadow = materialObj["isReceiveShadow"].GetBool();
         }
-         
-        if (materialObj.HasMember("isCastShadow"))
-            material->isCastShadow = materialObj["isCastShadow"].GetBool();
-        if (materialObj.HasMember("isReceiveShadow"))
-            material->isReceiveShadow = materialObj["isReceiveShadow"].GetBool();
 
         //transform
         Transform transform;

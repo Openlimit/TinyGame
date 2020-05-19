@@ -1,42 +1,48 @@
 {
-	"name":"water",
-	"objects":[
+	"name": "water",
+	"objects": [
 		{
-			"name":"water_plane",
-			"mesh":{
-				"name":"water",
-				"path":"resources/models/dense_plane.obj"
-			}
-			"material": {
+			"name": "water_plane",
+			"mesh": {
 				"name": "water",
-				"type": "custom"
-				"shader":{
-					"vs":"shaders/water.vs",
-					"frag":"shaders/water.frag"
-				}
+				"path": "resources/models/dense_plane.obj"
 			},
-			"transform":{
-				"scale": [10,10,10],
-				"translate":[0,0,0]
+			"transform": {
+				"scale": [ 1, 1, 1 ],
+				"translation": [ 0, 5, 0 ]
 			}
 		},
 		{
-			"name":"ground",
-			"mesh":{
-				"name":"ground",
-				"path":"resources/models/plane.obj"
-			}
-			"material":{
-				"name":"ground",
-				"type":"DIFFUSE_WITHOUT_SM",
-				"parameters":{
-					"color":[0.5,0.5,0.5]
+			"name": "ground",
+			"mesh": {
+				"name": "ground",
+				"path": "resources/models/plane.obj"
+			},
+			"material": {
+				"name": "ground",
+				"type": "DIFFUSE",
+				"isCastShadow": false,
+				"isReceiveShadow": false,
+				"parameters": {
+					"diffuse_color": [ 0.5, 0.5, 0.5 ]
 				}
 			},
-			"transform":{
-				"scale": [10,10,10],
-				"translate":[0,0,0]
+			"transform": {
+				"scale": [ 10, 10, 10 ],
+				"translation": [ 0, 0, 0 ]
 			}
+		}
+	],
+	"lights": [
+		{
+			"type": "DIRECTION",
+			"direction": [ -1, -1, 0 ],
+			"color": [ 1, 1, 1 ]
+		},
+		{
+			"type": "POINT",
+			"position": [ -10.0, 10.0, 10.0 ],
+			"color": [ 300.0, 300.0, 300.0 ]
 		}
 	]
 }

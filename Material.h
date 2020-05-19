@@ -26,8 +26,11 @@ public:
 
 	bool isReceiveShadow;
 	bool isCastShadow;
+	MaterialType type;
 
-	Material() :isReceiveShadow(false), isCastShadow(false) {}
+	Material() :isReceiveShadow(false), isCastShadow(false), type(MaterialType::CUSTOM) {}
+
+	Material(MaterialType type) :isReceiveShadow(false), isCastShadow(false), type(type) {}
 
 	//每帧调用，此时renderer已绑定shader
 	virtual void updateForwardShader() {}
@@ -42,27 +45,23 @@ class DiffuseMaterial:public Material
 {
 public:
 	glm::vec3 diffuse_color;
-	Camera* camera;
 
-	DiffuseMaterial() :Material()
+	DiffuseMaterial() :Material(MaterialType::DIFFUSE)
 	{}
 
-	void setupForwardShader(DirectionLight directionLight, PointLight pointLight, Camera* _camera, glm::vec3 _diffuse_color)
+	void setupForwardShader(DirectionLight directionLight, PointLight pointLight)
 	{
-		this->camera = _camera;
-		this->diffuse_color = _diffuse_color;
-
 		this->forwardShader->Use();
 		this->forwardShader->SetVector3f("directionLight.direction", directionLight.direction);
 		this->forwardShader->SetVector3f("directionLight.color", directionLight.color);
 		this->forwardShader->SetVector3f("pointLight.position", pointLight.position);
 		this->forwardShader->SetVector3f("pointLight.color", pointLight.color);
+		this->forwardShader->SetFloat("receiveShadow", isReceiveShadow);
 	}
 
 	void updateForwardShader() override
 	{
 		this->forwardShader->SetVector3f("diffuse_color", diffuse_color);
-		this->forwardShader->SetVector3f("viewPos", camera->Position);
 	}
 };
 
@@ -73,20 +72,12 @@ public:
 	float metallic;
 	float roughness;
 	float ao;
-	Camera* camera;
 
-	PBRMaterial() :Material()
+	PBRMaterial() :Material(MaterialType::PBR)
 	{}
 
-	void setupForwardShader(std::vector<PointLight> &pointLights, Camera* _camera, 
-		glm::vec3 _albedo, float _metallic, float _roughness, float _ao)
+	void setupForwardShader(std::vector<PointLight> &pointLights)
 	{
-		this->camera = _camera;
-		this->metallic = _metallic;
-		this->albedo = _albedo;
-		this->roughness = _roughness;
-		this->ao = _ao;
-
 		this->forwardShader->Use();
 		for (int i = 0; i < pointLights.size(); i++)
 		{
@@ -101,6 +92,5 @@ public:
 		this->forwardShader->SetFloat("metallic", metallic);
 		this->forwardShader->SetFloat("roughness", roughness);
 		this->forwardShader->SetFloat("ao", ao);
-		this->forwardShader->SetVector3f("camPos", camera->Position);
 	}
 };

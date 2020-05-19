@@ -203,6 +203,9 @@
     <ClInclude Include="utils.h">
       <Filter>头文件\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="WaterMaterial.h">
+      <Filter>头文件\Games\Water</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\water.frag">
@@ -273,9 +276,6 @@
     </None>
     <None Include="resources\scenes\rpg.scene">
       <Filter>资源文件\scenes</Filter>
-    </None>
-    <None Include="diffuse_without_sm.frag">
-      <Filter>资源文件\shaders\engine</Filter>
     </None>
   </ItemGroup>
 </Project>

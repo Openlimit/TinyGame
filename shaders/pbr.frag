@@ -14,7 +14,7 @@ uniform float ao;
 uniform vec3 lightPositions[4];
 uniform vec3 lightColors[4];
 
-uniform vec3 camPos;
+uniform vec3 cameraPos;
 
 const float PI = 3.14159265359;
 // ----------------------------------------------------------------------------
@@ -61,7 +61,7 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 void main()
 {		
     vec3 N = normalize(Normal);
-    vec3 V = normalize(camPos - FragPos);
+    vec3 V = normalize(cameraPos - FragPos);
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
     // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    

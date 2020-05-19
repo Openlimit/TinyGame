@@ -10,8 +10,15 @@
 			"material": {
 				"name": "sphere",
 				"type": "PBR",
-				"isCastShadow":true,
-				"isReceiveShadow":false
+				"isCastShadow": true,
+				"isReceiveShadow": false,
+				"parameters": {
+					"albedo": [ 0.5, 0, 0 ],
+					"metallic": 0.2,
+					"roughness": 0.2,
+					"ao": 1
+				}
+				
 			},
 			"transform":{
 				"translation":[0,1,0]
@@ -23,33 +30,20 @@
 				"name":"ground",
 				"path":"resources/models/plane.obj"
 			},
-			"material":{
-				"name":"ground",
-				"type":"DIFFUSE",
-				"isCastShadow":false,
-				"isReceiveShadow":true
+			"material": {
+				"name": "ground",
+				"type": "DIFFUSE",
+				"isCastShadow": false,
+				"isReceiveShadow": true,
+				"parameters": {
+					"diffuse_color": [ 0.5, 0.5, 0.5 ]
+				}
 			},
 			"transform":{
 				"scale": [10,10,10],
 				"translation":[0,0,0]
 			}
-		},
-		{
-			"name":"custom_sphere",
-			"mesh":{
-				"name":"sphere",
-				"path":"resources/models/sphere.obj"
-			},
-			"material": {
-				"name": "custom_sphere",
-				"type": "CUSTOM",
-				"isCastShadow":true,
-				"isReceiveShadow":false
-			},
-			"transform":{
-				"translation":[5,1,0]
-			}
-		},
+		}
 	],
 	"lights":[
 		{

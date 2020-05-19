@@ -53,9 +53,9 @@ int main(int argc, char* argv[])
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Initialize game
-    //game = new WaterGame(SCREEN_WIDTH, SCREEN_HEIGHT);
-    game = new RPGGame(SCREEN_WIDTH, SCREEN_HEIGHT);
-    game->Init();
+    game = new WaterGame(SCREEN_WIDTH, SCREEN_HEIGHT);
+    //game = new RPGGame(SCREEN_WIDTH, SCREEN_HEIGHT);
+    game->GameInit();
 
     // DeltaTime variables
     GLfloat deltaTime = 0.0f;

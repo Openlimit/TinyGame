@@ -186,9 +186,9 @@
     <ClInclude Include="Transform.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="WaterGame.h" />
+    <ClInclude Include="WaterMaterial.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="diffuse_without_sm.frag" />
     <None Include="resources\scenes\rpg.scene" />
     <None Include="resources\scenes\water.scene" />
     <None Include="shaders\debug_depth_map.frag" />

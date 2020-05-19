@@ -43,6 +43,8 @@ public:
 
     static Material* GetMaterial(std::string name);
 
+    static void ReplaceMaterial(std::string name, Material* material);
+
     // Properly de-allocates all loaded resources
     static void      Clear();
 private:
