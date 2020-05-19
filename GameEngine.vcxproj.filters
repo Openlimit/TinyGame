@@ -67,6 +67,9 @@
     <Filter Include="源文件\Engine\Texture">
       <UniqueIdentifier>{c6a1f152-777c-42d2-b68e-8522191108f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="资源文件\scenes">
+      <UniqueIdentifier>{46d1a468-8231-4ef6-8466-338aa48bf4a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -107,6 +110,12 @@
     </ClCompile>
     <ClCompile Include="Texture2D.cpp">
       <Filter>源文件\Engine\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>源文件\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.cpp">
+      <Filter>源文件\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +191,18 @@
     <ClInclude Include="Texture.h">
       <Filter>头文件\Engine\Texture</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>头文件\Games\RPG</Filter>
+    </ClInclude>
+    <ClInclude Include="FollowCamera.h">
+      <Filter>头文件\Engine\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="OrthCamera.h">
+      <Filter>头文件\Engine\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>头文件\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\water.frag">
@@ -245,6 +266,15 @@
       <Filter>资源文件\shaders\engine</Filter>
     </None>
     <None Include="shaders\pbr.frag">
+      <Filter>资源文件\shaders\engine</Filter>
+    </None>
+    <None Include="resources\scenes\water.scene">
+      <Filter>资源文件\scenes</Filter>
+    </None>
+    <None Include="resources\scenes\rpg.scene">
+      <Filter>资源文件\scenes</Filter>
+    </None>
+    <None Include="diffuse_without_sm.frag">
       <Filter>资源文件\shaders\engine</Filter>
     </None>
   </ItemGroup>

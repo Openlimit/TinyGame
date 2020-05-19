@@ -89,12 +89,12 @@ void DeferredRenderer::initRenderData()
 	glBindVertexArray(0);
 }
 
-void DeferredRenderer::Init(Scene* scene)
+void DeferredRenderer::Init(Scene* scene, Camera* camera)
 {
 
 }
 
-void DeferredRenderer::Draw(Scene *scene)
+void DeferredRenderer::Draw(Scene *scene, Camera* camera)
 {
 	//Geometric Pass
 	glBindFramebuffer(GL_FRAMEBUFFER, this->G_Buffer);

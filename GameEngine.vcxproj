@@ -149,10 +149,12 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="RPGGame.cpp" />
+    <ClCompile Include="scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShadowProcessor.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="TextureCubeMap.cpp" />
+    <ClCompile Include="utils.cpp" />
     <ClCompile Include="WaterGame.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -160,13 +162,16 @@
     <ClInclude Include="BSphere.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DeferredRenderer.h" />
+    <ClInclude Include="FollowCamera.h" />
     <ClInclude Include="ForwardRenderer.h" />
     <ClInclude Include="FPSCamera.h" />
     <ClInclude Include="GameBase.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="OpenGL_Common.h" />
+    <ClInclude Include="OrthCamera.h" />
     <ClInclude Include="PostProcessor.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderObject.h" />
@@ -179,9 +184,13 @@
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="TextureCubeMap.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="utils.h" />
     <ClInclude Include="WaterGame.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="diffuse_without_sm.frag" />
+    <None Include="resources\scenes\rpg.scene" />
+    <None Include="resources\scenes\water.scene" />
     <None Include="shaders\debug_depth_map.frag" />
     <None Include="shaders\diffuse.frag" />
     <None Include="shaders\diffuse.vs" />

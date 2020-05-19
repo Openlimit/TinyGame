@@ -1,19 +1,33 @@
 #pragma once
 #include "OpenGL_Common.h"
 
-class PointLight {
+class Light
+{
+public:
+	enum class LightType
+	{
+		DIRECTION,
+		POINT,
+		SPOT
+	};
+};
+
+class PointLight:public Light
+{
 public:
 	glm::vec3 color;
 	glm::vec3 position;
 };
 
-class DirectionLight {
+class DirectionLight :public Light
+{
 public:
 	glm::vec3 color;
 	glm::vec3 direction;
 };
 
-class SpotLight {
+class SpotLight :public Light
+{
 public:
 	glm::vec3 color;
 	glm::vec3 position;

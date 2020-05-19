@@ -51,7 +51,7 @@ float DirectShadowCalculation(vec4 fragPosLightSpace)
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
     float currentDepth = projCoords.z;
-    if(currentDepth > 1.0)
+    if(currentDepth>1)
         return 0.0;
 
     float closestDepth = texture(directionShadowMap, projCoords.xy).r; 

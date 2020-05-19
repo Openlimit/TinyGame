@@ -9,8 +9,8 @@ public:
 
     ~ForwardRenderer();
 
-    void Init(Scene* scene) override;
+    void Init(Scene* scene, Camera* camera) override;
 
-    void Draw(Scene* scene) override;
+    void Draw(Scene* scene, Camera* camera) override;
 };
 

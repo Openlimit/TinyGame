@@ -15,7 +15,6 @@ public:
 	std::map<GLuint, std::vector<RenderObject*>> shaderObjectlist;
 	DirectionLight directionLight;
 	std::vector<PointLight> pointLights;
-	BSphere sceneBounding;
 
 	RenderObject* skyBox;
 
@@ -31,10 +30,11 @@ public:
 			delete skyBox;
 	}
 
+	void load(std::string path);
+
 	void addRenderObject(Mesh* mesh, Material* material, Transform transform, std::string name)
 	{
 		auto obj = new RenderObject(mesh, material, transform);
-		updateSceneBounding(obj->bounding);
 		updateShaderObjectlist(obj);
 		renderObjects[name] = obj;
 	}
@@ -42,14 +42,12 @@ public:
 	void addRenderObject(Mesh* mesh, Material* material, std::string name)
 	{
 		auto obj = new RenderObject(mesh, material);
-		updateSceneBounding(obj->bounding);
 		updateShaderObjectlist(obj);
 		renderObjects[name] = obj;
 	}
 
 	void addRenderObject(RenderObject* obj, std::string name)
 	{
-		updateSceneBounding(obj->bounding);
 		updateShaderObjectlist(obj);
 		renderObjects[name] = obj;
 	}
@@ -70,36 +68,5 @@ public:
 	}
 
 private:
-	void updateSceneBounding(BSphere meshBounding)
-	{
-		if (renderObjects.empty())
-		{
-			sceneBounding = meshBounding;
-		}
-		else
-		{
-			sceneBounding = BSphere::merge(sceneBounding, meshBounding);
-		}
-	}
-
-	void updateShaderObjectlist(RenderObject* obj)
-	{
-		GLuint shaderID;
-		if (obj->material->forwardShader != nullptr)
-			shaderID = obj->material->forwardShader->ID;
-		else if (obj->material->defferedGeoShader != nullptr)
-			shaderID = obj->material->defferedGeoShader->ID;
-		else
-			return;
-
-		if (shaderObjectlist.find(shaderID) != shaderObjectlist.end())
-		{
-			shaderObjectlist[shaderID].emplace_back(obj);
-		}
-		else
-		{
-			std::vector<RenderObject*> list = { obj };
-			shaderObjectlist[shaderID] = list;
-		}
-	}
+	void updateShaderObjectlist(RenderObject* obj);
 };

@@ -14,7 +14,8 @@ public:
 	{
 		DIFFUSE,
 		SKYBOX,
-		PBR
+		PBR,
+		CUSTOM
 	};
 
 	Shader* forwardShader;

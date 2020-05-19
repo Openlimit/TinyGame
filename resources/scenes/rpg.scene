@@ -1,0 +1,66 @@
+{
+	"name":"rpg",
+	"objects":[
+		{
+			"name":"sphere",
+			"mesh":{
+				"name":"sphere",
+				"path":"resources/models/sphere.obj"
+			},
+			"material": {
+				"name": "sphere",
+				"type": "PBR",
+				"isCastShadow":true,
+				"isReceiveShadow":false
+			},
+			"transform":{
+				"translation":[0,1,0]
+			}
+		},
+		{
+			"name":"ground",
+			"mesh":{
+				"name":"ground",
+				"path":"resources/models/plane.obj"
+			},
+			"material":{
+				"name":"ground",
+				"type":"DIFFUSE",
+				"isCastShadow":false,
+				"isReceiveShadow":true
+			},
+			"transform":{
+				"scale": [10,10,10],
+				"translation":[0,0,0]
+			}
+		},
+		{
+			"name":"custom_sphere",
+			"mesh":{
+				"name":"sphere",
+				"path":"resources/models/sphere.obj"
+			},
+			"material": {
+				"name": "custom_sphere",
+				"type": "CUSTOM",
+				"isCastShadow":true,
+				"isReceiveShadow":false
+			},
+			"transform":{
+				"translation":[5,1,0]
+			}
+		},
+	],
+	"lights":[
+		{
+			"type":"DIRECTION",
+			"direction":[-1, -1, 0],
+			"color":[1, 1, 1]
+		},
+		{
+			"type":"POINT",
+			"position":[-10.0,  10.0, 10.0],
+			"color":[300.0, 300.0, 300.0]
+		}
+	]
+}

@@ -1,12 +1,14 @@
 #pragma once
 #include "GameBase.h"
 #include "Camera.h"
+#include "GameObject.h"
 
 class RPGGame :public GameBase
 {
 public:
 
     float time;
+    GameObject* player;
 
     RPGGame(GLuint width, GLuint height);
     ~RPGGame();

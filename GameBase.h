@@ -14,11 +14,8 @@ public:
     Scene *scene;
     bool isFirstFrame;
 
-    float near_plane;
-    float far_plane;
 
-
-    GameBase(GLuint width, GLuint height, Renderer::RendererType type = Renderer::RendererType::FORWARD) :Width(width), Height(height), near_plane(0.1), far_plane(100), isFirstFrame(true)
+    GameBase(GLuint width, GLuint height, Renderer::RendererType type = Renderer::RendererType::FORWARD) :Width(width), Height(height), isFirstFrame(true)
     {
         if (type == Renderer::RendererType::FORWARD)
         {
@@ -44,11 +41,11 @@ public:
     {
         if (isFirstFrame)
         {
-            this->renderer->Init(this->scene);
+            this->renderer->Init(this->scene, camera);
             isFirstFrame = false;
         }
 
-        this->renderer->Draw(this->scene);
+        this->renderer->Draw(this->scene, camera);
     }
 
     void GameProcessInput(GLfloat dt)
@@ -71,9 +68,9 @@ public:
 
     void GameUpdate(GLfloat dt)
     {
-        glm::mat4 view = this->camera->GetViewMatrix();
-        glm::mat4 projection = glm::perspective(glm::radians(this->camera->Zoom), (float)Width / (float)Height, near_plane, far_plane);
-
+        auto view = this->camera->GetViewMatrix();
+        auto projection = this->camera->GetProjectionMatrix((float)Width / (float)Height);
+        
         for (auto iter : ResourceManager::Shaders)
         {
             if (iter.second->auto_update_VP)

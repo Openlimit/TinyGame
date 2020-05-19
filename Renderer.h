@@ -18,9 +18,9 @@ public:
 
     virtual ~Renderer();
 
-    virtual void Init(Scene* scene) = 0;
+    virtual void Init(Scene* scene, Camera* camera) = 0;
 
-    virtual void Draw(Scene *scene) = 0;
+    virtual void Draw(Scene *scene, Camera* camera) = 0;
 
     void addPostProcessor(Shader* shader, int width, int height);
 
@@ -32,5 +32,7 @@ protected:
     GLuint Width, Height;
     PostProcessor* postProcessor;
     ShadowProcessor* shadowProcessor;
+
+    void Culling(Scene* scene, Camera* camera);
 };
 

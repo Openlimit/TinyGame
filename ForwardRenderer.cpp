@@ -6,18 +6,24 @@ ForwardRenderer::ForwardRenderer(GLuint width, GLuint height) :Renderer(width, h
 ForwardRenderer::~ForwardRenderer()
 {}
 
-void ForwardRenderer::Init(Scene* scene)
+void ForwardRenderer::Init(Scene* scene, Camera* camera)
 {
+    
+}
+
+void ForwardRenderer::Draw(Scene* scene, Camera* camera)
+{
+    Culling(scene, camera);
+
     if (this->shadowProcessor != nullptr)
     {
         this->shadowProcessor->renderDirectionLight(scene);
+        //this->shadowProcessor->renderDepth();
+        //return;
         if (this->enablePointLightShadow)
             this->shadowProcessor->renderPointLight(scene);
     }
-}
 
-void ForwardRenderer::Draw(Scene* scene)
-{
     if (this->postProcessor != nullptr)
         this->postProcessor->BeginRender();
 
@@ -33,6 +39,8 @@ void ForwardRenderer::Draw(Scene* scene)
         glUseProgram(shaderID);
         for (auto obj: objectList)
         {
+            if (!obj->visible)
+                continue;
             glm::mat4 model = obj->transform.getTransform();
             obj->material->forwardShader->SetMatrix4("model", model);
             obj->material->updateForwardShader();

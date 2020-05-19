@@ -12,8 +12,8 @@ public:
 	Mesh* mesh;
     Transform transform;
     Material* material;
-    BSphere bounding;
     GLuint VAO;
+    bool visible;
 
 	RenderObject(Mesh* mesh, Material* material, Transform transform) :mesh(mesh), transform(transform), material(material)
 	{
@@ -30,21 +30,28 @@ public:
         setup();
     }
 
-    ~RenderObject() {
+    virtual ~RenderObject() {
         glDeleteBuffers(1, &VBO);
         //glDeleteBuffers(1, &EBO);
         glDeleteVertexArrays(1, &VAO);
     }
 
+    BSphere getBounding()
+    {
+        glm::mat4 transMat = transform.getTransform();
+        BSphere curBounding;
+        curBounding.center = glm::vec3(transMat * glm::vec4(bounding.center, 1.f));
+        curBounding.radius = bounding.radius * std::fmax(std::fmax(transform.scale.x, transform.scale.y), transform.scale.z);
+        return curBounding;
+    }
+
 private:
     GLuint VBO, EBO;
+    BSphere bounding;
 
     void setup()
     {
         bounding = BSphere::getBSphere(mesh);
-        glm::mat4 transMat = transform.getTransform();
-        bounding.center = glm::vec3(transMat * glm::vec4(bounding.center, 1.f));
-        bounding.radius *= std::fmax(std::fmax(transform.scale.x, transform.scale.y), transform.scale.z);
 
         // create buffers/arrays
         glGenVertexArrays(1, &VAO);

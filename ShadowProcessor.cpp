@@ -2,23 +2,24 @@
 #include <iostream>
 
 #include "ResourceManager.h"
+#include "OrthCamera.h"
 
-BSphere GetCastShadowBounding(Scene* scene)
+BSphere GetShadowBounding(Scene* scene)
 {
     BSphere bounding;
     bounding.radius = 0;
     for (auto iter : scene->renderObjects)
     {
         auto obj = iter.second;
-        if (obj->material->isCastShadow)
+        if (obj->visible && obj->material->isReceiveShadow)
         {
             if (bounding.radius > 0)
             {
-                bounding = BSphere::merge(bounding, obj->bounding);
+                bounding = BSphere::merge(bounding, obj->getBounding());
             }
             else
             {
-                bounding = obj->bounding;
+                bounding = obj->getBounding();
             }
         }
     }
@@ -82,15 +83,35 @@ ShadowProcessor::~ShadowProcessor()
 void ShadowProcessor::renderDirectionLight(Scene *scene)
 {
     auto view = glm::mat3(glm::lookAt(glm::vec3(0), scene->directionLight.direction, glm::vec3(0, 1, 0)));
-    BSphere bounding = GetCastShadowBounding(scene);
+    BSphere bounding = GetShadowBounding(scene);
     bounding.center = view * bounding.center;
 
     //OpenGL进行view变换后，相机是朝向z轴负方向,所以要使用max_pos的z值
-    glm::vec3 lightPos(bounding.center.x, bounding.center.y, bounding.center.z + bounding.radius + 0.1f);
+    float max_z = bounding.center.z + bounding.radius;
+    for (auto iter : scene->renderObjects)
+    {
+        auto obj = iter.second;
+        //需要考虑视野外的Cast Shadow物体
+        if (obj->material->isCastShadow)
+        {
+            auto bs = obj->getBounding();
+            bs.center = view * bs.center;
+            if (bs.center.x - bs.radius < bounding.center.x + bounding.radius &&
+                bs.center.x + bs.radius > bounding.center.x - bounding.radius &&
+                bs.center.y - bs.radius < bounding.center.y + bounding.radius &&
+                bs.center.y + bs.radius > bounding.center.y - bounding.radius &&
+                bs.center.z + bs.radius > max_z)
+            {
+                max_z = bs.center.z + bs.radius;
+            }
+        }
+    }
+
+    glm::vec3 lightPos(bounding.center.x, bounding.center.y, max_z);
     lightPos = glm::transpose(view) * lightPos;
     auto lightView = glm::lookAt(lightPos, lightPos + scene->directionLight.direction, glm::vec3(0, 1, 0));
-
-    auto projection = glm::ortho(-bounding.radius, bounding.radius, -bounding.radius, bounding.radius, 0.f, bounding.radius * 2 + 0.1f);
+    auto projection = glm::ortho(-bounding.radius, bounding.radius, -bounding.radius, bounding.radius,
+        0.f, max_z - (bounding.center.z - bounding.radius));
     directionLightSpaceMatrix = projection * lightView;
 
     glViewport(0, 0, Width, Height);
@@ -121,7 +142,7 @@ void ShadowProcessor::renderPointLight(Scene* scene)
     if (scene->pointLights.size() == 0)
         return;
 
-    BSphere bounding = GetCastShadowBounding(scene);
+    BSphere bounding = GetShadowBounding(scene);
 
     glViewport(0, 0, Height, Height);
     glBindFramebuffer(GL_FRAMEBUFFER, pointLightFBO);
@@ -153,7 +174,7 @@ void ShadowProcessor::renderPointLight(Scene* scene)
         far_planes[i] = far;
 
         GLfloat aspect = 1.f;
-        GLfloat near = 1.f;
+        GLfloat near = 0.1f;
         glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
 
         std::vector<glm::mat4> shadowTransforms;
